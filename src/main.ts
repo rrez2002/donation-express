@@ -1,17 +1,54 @@
-import express, { Request, Response } from 'express';
-import  dotenv from 'dotenv';
+import express, {Request, Response} from 'express';
+import dotenv from 'dotenv';
+import {connect} from 'mongoose';
+import Path from 'path';
 
 dotenv.config();
-const app = express();
-const url = process.env.URL;
-const port = process.env.PORT;
+const project_name: string = process.env.NAME || "express_project";
+const url: string = process.env.URL || "http://localhost";
+const port: string = process.env.PORT || "8000";
+const db_url: string = process.env.DB_URL || `mongodb://localhost:27017/${project_name}`;
 
-// define a route handler for the default home page
-app.get( "/", (req: Request,res : Response ) => {
-    res.send( "Hello world!" );
-} );
+class Application {
+    private _app = express();
 
-// start the Express server
-app.listen( port, () => {
-    console.log(`[server]: Server is running at ${url}:${port}`);
-} );
+    constructor(PORT: string, DB_URL: string) {
+        this.configApplication();
+        this.configDatabase(DB_URL);
+        this.createRouters();
+        this.createServer(PORT);
+    }
+
+    private configApplication(): void {
+        this._app.use(express.json());
+        this._app.use(express.urlencoded({extended: true}));
+        this._app.use(express.static(Path.join(__dirname, "..", "public")));
+    }
+
+    private createServer(port: string): void {
+        this._app.listen(port, () => {
+            console.log(`[server]: Server is running at ${url}:${port}`);
+        })
+    }
+
+    private configDatabase(DB_URL: string): void {
+        connect(DB_URL, (error) => {
+            if (error) throw error;
+            console.log("connect db success..")
+        })
+    }
+
+    private createRouters(): void {
+        this._app.get("/", (req: Request, res: Response) => {
+            return res.json({
+                message: "hello world"
+            })
+        })
+    }
+}
+
+function Main() {
+    new Application(port, db_url)
+}
+
+Main()
