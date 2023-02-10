@@ -2,6 +2,7 @@ import express, {Request, Response} from 'express';
 import dotenv from 'dotenv';
 import {connect} from 'mongoose';
 import Path from 'path';
+import Router from "./router/router";
 
 dotenv.config();
 const project_name: string = process.env.NAME || "express_project";
@@ -44,6 +45,7 @@ class Application {
                 message: "hello world"
             })
         })
+        this._app.use(Router)
     }
 }
 
