@@ -12,10 +12,10 @@ class AuthController {
             first_name, last_name, user_name, phone, password
         })
 
-        if (process.env.PRIVET_KEY){
-            const token = sign(user, process.env.PRIVET_KEY)
+        if (process.env.PRIVET_KEY) {
+            const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
             return res.status(201).json({
-                token:token
+                token: token
             })
         }
 
@@ -29,11 +29,10 @@ class AuthController {
 
         if (user) {
             if (compareSync(password, user.password)) {
-                if (process.env.PRIVET_KEY){
-                    const token = sign(user.user_name, process.env.PRIVET_KEY)
+                if (process.env.PRIVET_KEY) {
+                    const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
                     return res.status(200).json({
-                        user,
-                        token
+                        user, token
                     })
                 }
 
