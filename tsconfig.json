@@ -8,6 +8,14 @@
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
     "paths": {
       "*": [
         "node_modules/*"

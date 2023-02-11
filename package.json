@@ -4,9 +4,10 @@
   "description": "express project for donate to users",
   "main": "./src/index.ts",
   "scripts": {
+    "dev": "nodemon ./src/main.ts",
     "build": "tsc",
     "prestart": "npm run build",
-    "start": "nodemon ./src/main.ts"
+    "start": "node ./dist/main.js"
   },
   "keywords": [
     "express",
@@ -27,7 +28,10 @@
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.16",
     "@types/node": "^16.18.11",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
     "dotenv": "^16.0.3",
+    "eslint": "^8.34.0",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
     "tslint": "^6.1.3",
