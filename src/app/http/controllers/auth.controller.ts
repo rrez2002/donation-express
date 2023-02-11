@@ -1,20 +1,20 @@
 import {UserModel} from "../../models/user.model";
 import {Request, Response} from "express";
-import {hashSync} from "bcrypt";
 
 class AuthController{
     async Register(req: Request, res: Response){
         const {first_name, last_name , user_name, phone, password} = req.body;
 
-         const user = await UserModel.create({
+         await UserModel.create({
             first_name,
             last_name ,
             user_name,
             phone,
-            password: hashSync(password, 10)
+            password
         })
 
-        return res.status(201).json(user)
+        res.header("Content-Type","application/json")
+        return res.status(201).json({})
     }
     Login(req: Request, res: Response){
     }

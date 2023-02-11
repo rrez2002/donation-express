@@ -12,7 +12,7 @@
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "strictPropertyInitialization": false,
+    "strictPropertyInitialization": true,
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
