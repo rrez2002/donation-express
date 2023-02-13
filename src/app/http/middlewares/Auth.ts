@@ -12,10 +12,12 @@ export async function Auth(req: Request, res: Response, next: NextFunction) {
             if (token){
                 const decodedToken : JwtPayload | string  = verify(token,process.env.PRIVET_KEY)
                 if (typeof decodedToken == "object"){
-                    const user_name = decodedToken.data
-                    const user = await UserModel.findOne({user_name},{password:0})
-                    if (user){
-                        return next()
+                    if(typeof decodedToken.exp == "number" && new Date().valueOf() >= decodedToken.exp) {
+                        const user_name = decodedToken.data
+                        const user = await UserModel.findOne({user_name},{user_name:1})
+                        if (user){
+                            return next()
+                        }
                     }
                 }
             }
