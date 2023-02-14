@@ -1,12 +1,13 @@
-import {Model, model, Schema} from "mongoose";
+import {Model, model, Schema, Types} from "mongoose";
 import {hashSync} from "bcrypt";
 
-interface IUser {
-    first_name:string,
-    last_name:string,
-    user_name:string,
-    phone:string,
-    password:string,
+export interface IUser {
+    _id: Types.ObjectId
+    first_name: string,
+    last_name: string,
+    user_name: string,
+    phone: string,
+    password: string,
 }
 
 interface IUserMethods {
@@ -25,7 +26,7 @@ const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
     timestamps: true
 })
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
     this.password = hashSync(this.password, 10)
     next();
 });
@@ -34,4 +35,4 @@ UserSchema.method('fullName', function fullName() {
     return `${this.first_name} ${this.last_name}`;
 });
 
-export const UserModel = model<IUser, UserModel>("User", UserSchema);
+export const UserModel: UserModel = model<IUser, UserModel>("User", UserSchema);

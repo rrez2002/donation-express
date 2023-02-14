@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import {connect} from 'mongoose';
 import Path from 'path';
 import Router from "./router/router";
+import {IUser} from "./app/models/user.model";
 
 dotenv.config();
 const project_name: string = process.env.NAME || "express_project";
@@ -54,3 +55,11 @@ function Main() {
 }
 
 Main()
+
+declare global {
+    namespace Express {
+        interface Request {
+            user: IUser
+        }
+    }
+}

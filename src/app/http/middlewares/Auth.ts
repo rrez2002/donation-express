@@ -16,6 +16,7 @@ export async function Auth(req: Request, res: Response, next: NextFunction) {
                         const user_name = decodedToken.data
                         const user = await UserModel.findOne({user_name},{user_name:1})
                         if (user){
+                            req.user = user;
                             return next()
                         }
                     }
@@ -24,6 +25,6 @@ export async function Auth(req: Request, res: Response, next: NextFunction) {
         }
     }
 
-    return res.status(400).json({})
+    return res.status(401).json({})
 
 }
