@@ -1,7 +1,7 @@
 import {Model, model, Schema, Types} from "mongoose";
 import {hashSync} from "bcrypt";
 
-export interface IUser {
+interface IUser {
     _id: Types.ObjectId
     first_name: string,
     last_name: string,
@@ -13,6 +13,8 @@ export interface IUser {
 interface IUserMethods {
     fullName(): string;
 }
+
+export type User = IUser & IUserMethods
 
 type UserModel = Model<IUser, {}, IUserMethods>;
 

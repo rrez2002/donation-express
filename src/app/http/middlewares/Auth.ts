@@ -14,7 +14,7 @@ export async function Auth(req: Request, res: Response, next: NextFunction) {
                 if (typeof decodedToken == "object"){
                     if(typeof decodedToken.exp == "number" && new Date().valueOf() >= decodedToken.exp) {
                         const user_name = decodedToken.data
-                        const user = await UserModel.findOne({user_name},{user_name:1})
+                        const user = await UserModel.findOne({user_name},{password:0})
                         if (user){
                             req.user = user;
                             return next()
