@@ -5,7 +5,7 @@ export function validationRequest(req: Request, res: Response, next: NextFunctio
     const result = validationResult(req);
 
     if(result.isEmpty()){
-        next()
+        return next()
     }
     return res.status(400).json(result)
 
