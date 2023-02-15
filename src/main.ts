@@ -5,6 +5,10 @@ import Path from 'path';
 import Router from "./router/router";
 import {User} from "./app/models/user.model";
 
+import {serve, setup} from "swagger-ui-express"
+import swaggerJSDoc from "swagger-jsdoc"
+
+
 dotenv.config();
 const project_name: string = process.env.NAME || "express_project";
 const url: string = process.env.URL || "http://localhost";
@@ -25,6 +29,16 @@ class Application {
         this._app.use(express.json());
         this._app.use(express.urlencoded({extended: true}));
         this._app.use(express.static(Path.join(__dirname, "..", "public")));
+        this._app.use("/api-doc", serve, setup(swaggerJSDoc({
+            swaggerDefinition:{
+                info: {
+                    title: "donation-express",
+                    version: "1.0.0",
+                    description: "express project for donate to users"
+                },
+            },
+            apis : ["./router/*/*.ts"],
+        })));
     }
 
     private createServer(port: string): void {
