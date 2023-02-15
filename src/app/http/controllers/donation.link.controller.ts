@@ -3,7 +3,8 @@ import {Request, Response} from "express";
 
 class DonationLinkController {
     async Index(req: Request, res: Response): Promise<Response> {
-        const donationLinks: DonationLink[] = await DonationLinkModel.find({})
+        const user_id = req.user._id
+        const donationLinks: DonationLink[] = await DonationLinkModel.find({user_id})
         console.log(donationLinks)
 
         return res.json(donationLinks)
