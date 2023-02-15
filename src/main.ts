@@ -36,8 +36,14 @@ class Application {
                     version: "1.0.0",
                     description: "express project for donate to users"
                 },
+                schemes: ["http", "https"],
+                servers: [
+                    { url: `${url}:${port}` }
+                ],
             },
-            apis : ["./router/*/*.ts"],
+            apis: [
+                `${__dirname}/router/*.ts`,
+            ],
         })));
     }
 
