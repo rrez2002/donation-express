@@ -1,7 +1,7 @@
 import {Router} from "express";
 import AuthRouter from "./auth.router";
 import UserRouter from "./user.router";
-import DonationLinkRouter from "./donation.link.model.router";
+import DonationLinkRouter from "./donation.link.router";
 
 const router : Router = Router()
 router.use("/auth",AuthRouter)
