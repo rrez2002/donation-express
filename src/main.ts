@@ -8,6 +8,7 @@ import {User} from "./app/models/user.model";
 import {serve, setup} from "swagger-ui-express"
 import swaggerJSDoc from "swagger-jsdoc"
 
+import {RedisClient} from "./utils/redis";
 
 dotenv.config();
 const project_name: string = process.env.NAME || "express_project";
@@ -21,6 +22,7 @@ class Application {
     constructor(PORT: string, DB_URL: string) {
         this.configApplication();
         this.configDatabase(DB_URL);
+        this.configRedis();
         this.createRouters();
         this.createServer(PORT);
     }
@@ -58,6 +60,10 @@ class Application {
             if (error) throw error;
             console.log("connect db success..")
         })
+    }
+
+    private async configRedis(){
+        await RedisClient.connect()
     }
 
     private createRouters(): void {
