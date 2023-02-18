@@ -38,21 +38,31 @@ class Application {
 
 
         this._app.use("/api-doc", serve, setup(swaggerJSDoc({
-            swaggerDefinition:{
+            swaggerDefinition: {
+                openapi: "3.0.0",
                 info: {
                     title: "donation-express",
                     version: "1.0.0",
                     description: "express project for donate to users"
                 },
                 schemes: ["http", "https"],
-                servers: [
-                    { url: `${url}:${port}` }
-                ],
+                servers: [{url: `${url}:${port}`}],
+                components:{
+                    securitySchemes : {
+                        BearerAuth : {
+                            type: "http",
+                            scheme: "bearer",
+                            bearerFormat: "JWT",
+
+                        }
+                    }
+                },
+                security : [{BearerAuth : [] }]
             },
-            apis: [
-                `${__dirname}/router/*.ts`,
-            ],
-        })));
+            apis: [`${__dirname}/router/*.ts`,],
+        }), {
+            explorer: true
+        }));
     }
 
     private createServer(port: string): void {
