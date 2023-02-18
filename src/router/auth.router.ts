@@ -15,44 +15,28 @@ const authRouter: Router = Router()
  *          description: Send User Information for  Registration
  *          consumes:
  *              - application/x-www-form-urlencoded
- *          parameters:
- *             - name: first_name
- *               in: formData
- *               required: true
- *               type: string
- *
- *             - name: last_name
- *               in: formData
- *               required: true
- *               type: string
- *
- *             - name: user_name
- *               description: unique username
- *               in: formData
- *               required: true
- *               type: string
- *
- *             - name: phone
- *               description: IR phone number
- *               in: formData
- *               required: true
- *               type: string
- *
- *             - name: password
- *               description: password
- *               in: formData
- *               required: true
- *               type: string
  *          requestBody:
  *              required: true
  *              content:
- *                  application/json:
+ *                  application/x-www-form-urlencoded:
  *                      schema:
  *                          type: object
  *                          properties:
- *                              responseText:
+ *                              first_name:
  *                                  type: string
- *                                  example: This is some example string! This is an endpoint
+ *                                  example: firstname
+ *                              last_name:
+ *                                  type: string
+ *                                  example: lastname
+ *                              user_name:
+ *                                  type: string
+ *                                  example: username
+ *                              phone:
+ *                                  type: string
+ *                                  example: 090100000000
+ *                              password:
+ *                                  type: string
+ *                                  example: password
  *          responses:
  *              201:
  *                  description: Success
@@ -61,7 +45,9 @@ const authRouter: Router = Router()
  *                          schema:
  *                              type: object
  *                              properties:
- *                                  token:
+ *                                 token:
+ *                                      type: string
+ *                                 refreshToken:
  *                                      type: string
  *              400:
  *                  description: Bad Request
@@ -72,33 +58,23 @@ authRouter.post("/register", RegisterValidator(), validationRequest, AuthControl
  * @swagger
  * /auth/login:
  *      post:
- *          summary: Register User
+ *          summary: Login User
  *          tags:
  *              - Auth
- *          description: Send User Information for  Registration
- *          consumes:
- *              - application/x-www-form-urlencoded
- *          parameters:
- *             - name: user_name
- *               description: unique username
- *               in: formData
- *               required: true
- *               type: string
- *             - name: password
- *               description: password
- *               in: formData
- *               required: true
- *               type: string
+ *          description: Send User Information for  Login
  *          requestBody:
  *              required: true
  *              content:
- *                  application/json:
+ *                  application/x-www-form-urlencoded:
  *                      schema:
  *                          type: object
  *                          properties:
- *                              responseText:
+ *                              user_name:
  *                                  type: string
- *                                  example: This is some example string! This is an endpoint
+ *                                  example: rrez2002
+ *                              password:
+ *                                  type: string
+ *                                  example: password
  *          responses:
  *              200:
  *                  description: Success
@@ -108,6 +84,8 @@ authRouter.post("/register", RegisterValidator(), validationRequest, AuthControl
  *                              type: object
  *                              properties:
  *                                  token:
+ *                                      type: string
+ *                                  refreshToken:
  *                                      type: string
  *              400:
  *                  description: Bad Request
