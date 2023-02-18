@@ -10,6 +10,8 @@ import swaggerJSDoc from "swagger-jsdoc"
 
 import {RedisClient} from "./utils/redis";
 
+import morgan from "morgan"
+
 dotenv.config();
 const project_name: string = process.env.NAME || "express_project";
 const url: string = process.env.URL || "http://localhost";
@@ -31,6 +33,10 @@ class Application {
         this._app.use(express.json());
         this._app.use(express.urlencoded({extended: true}));
         this._app.use(express.static(Path.join(__dirname, "..", "public")));
+
+        this._app.use(morgan('dev'))
+
+
         this._app.use("/api-doc", serve, setup(swaggerJSDoc({
             swaggerDefinition:{
                 info: {
