@@ -3,6 +3,7 @@ import {Request, Response} from "express";
 import {compareSync} from "bcrypt";
 
 import {JwtPayload, sign, verify} from "jsonwebtoken"
+import {RedisClient} from "../../../utils/redis";
 
 class AuthController {
     async Register(req: Request, res: Response) {
@@ -33,6 +34,7 @@ class AuthController {
                 if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
                     const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
                     const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
+                    await RedisClient.setEx(user_name, 3600* 24 * 5,refreshToken)
                     return res.status(200).json({
                         token,refreshToken
                     })
@@ -45,7 +47,6 @@ class AuthController {
     }
 
     async RefreshToken(req: Request, res: Response) {
-
         if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
             const {token} = req.body;
             if (token) {
@@ -53,13 +54,18 @@ class AuthController {
                 if (typeof decodedToken == "object") {
                     if (typeof decodedToken.exp == "number" && new Date().valueOf() >= decodedToken.exp) {
                         const user_name = decodedToken.data
-                        const user = await UserModel.findOne({user_name}, {password: 0})
-                        if (user) {
-                            const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
-                            const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
-                            return res.status(200).json({
-                                token, refreshToken
-                            })
+                        const refreshToken = await RedisClient.get(user_name)
+                        if (token == refreshToken){
+                            const user = await UserModel.findOne({user_name}, {password: 0})
+                            if (user) {
+                                const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
+                                const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
+                                await RedisClient.setEx(user_name, 3600* 24 * 5,refreshToken)
+
+                                return res.status(200)  .json({
+                                    token, refreshToken
+                                })
+                            }
                         }
                     }
                 }

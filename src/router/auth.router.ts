@@ -114,7 +114,7 @@ authRouter.post("/register", RegisterValidator(), validationRequest, AuthControl
  *
  */
 authRouter.post("/login", LoginValidator(), validationRequest, AuthController.Login)
-authRouter.post("/refresh", Auth, AuthController.RefreshToken)
+authRouter.post("/refresh", AuthController.RefreshToken)
 authRouter.post("/logout", Auth, AuthController.Logout)
 
 export default authRouter;
