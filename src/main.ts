@@ -59,7 +59,7 @@ class Application {
                 },
                 security : [{BearerAuth : [] }]
             },
-            apis: [`${__dirname}/router/*.ts`,],
+            apis: [`${__dirname}/router/swagger/*.ts`,],
         }), {
             explorer: true
         }));
