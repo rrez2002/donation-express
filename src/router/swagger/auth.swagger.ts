@@ -1,5 +1,20 @@
 /**
  * @swagger
+ *  definitions:
+ *      AuthResponse:
+ *          type: object
+ *          properties:
+ *             token:
+ *                  type: string
+ *                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoicnJlejIwMDIiLCJpYXQiOjE2NzY4MzA5MzEsImV4cCI6MTY3NzA5MDEzMX0.o8ExAo-5_DPR29ULDkfIxFoE0B_S-UzQ_PLO9FcLNc4
+ *             refreshToken:
+ *                  type: string
+ *                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoicnJlejIwMDIiLCJpYXQiOjE2NzY4MzA5MzEsImV4cCI6MTY3NzI2MjkzMX0.aadT7HE9cUMervKDsvqiVodAZrHayVDQZWQR7XIFhM8
+ *
+ */
+
+/**
+ * @swagger
  * /auth/register:
  *      post:
  *          summary: Register User
@@ -36,12 +51,7 @@
  *                  content:
  *                      application/json:
  *                          schema:
- *                              type: object
- *                              properties:
- *                                 token:
- *                                      type: string
- *                                 refreshToken:
- *                                      type: string
+ *                              $ref: '#/definitions/AuthResponse'
  *              400:
  *                  description: Bad Request
  *
@@ -60,14 +70,7 @@
  *              content:
  *                  application/x-www-form-urlencoded:
  *                      schema:
- *                          type: object
- *                          properties:
- *                              user_name:
- *                                  type: string
- *                                  example: rrez2002
- *                              password:
- *                                  type: string
- *                                  example: password
+ *                             $ref: '#/definitions/AuthResponse'
  *          responses:
  *              200:
  *                  description: Success
@@ -109,12 +112,7 @@
  *                  content:
  *                      application/json:
  *                          schema:
- *                              type: object
- *                              properties:
- *                                  token:
- *                                      type: string
- *                                  refreshToken:
- *                                      type: string
+ *                             $ref: '#/definitions/AuthResponse'
  *              400:
  *                  description: Bad Request
  *
