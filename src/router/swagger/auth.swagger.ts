@@ -1,5 +1,48 @@
 /**
  * @swagger
+ *  components:
+ *      schemas:
+ *          Register:
+ *              type: object
+ *              required:
+ *                  -   first_name
+ *                  -   last_name
+ *                  -   user_name
+ *                  -   phone
+ *                  -   password
+ *              properties:
+ *                  first_name:
+ *                      type: string
+ *                      example: firstname
+ *                  last_name:
+ *                      type: string
+ *                      example: lastname
+ *                  user_name:
+ *                      type: string
+ *                      example: username
+ *                  phone:
+ *                      type: string
+ *                      example: 090100000000
+ *                  password:
+ *                      type: string
+ *                      example: password
+ *          Login:
+ *              type: object
+ *              required:
+ *                  -   user_name
+ *                  -   password
+ *              properties:
+ *                  user_name:
+ *                      type: string
+ *                      example: username
+ *                  password:
+ *                      type: string
+ *                      example: password
+ *
+ */
+
+/**
+ * @swagger
  *  definitions:
  *      AuthResponse:
  *          type: object
@@ -28,23 +71,7 @@
  *              content:
  *                  application/x-www-form-urlencoded:
  *                      schema:
- *                          type: object
- *                          properties:
- *                              first_name:
- *                                  type: string
- *                                  example: firstname
- *                              last_name:
- *                                  type: string
- *                                  example: lastname
- *                              user_name:
- *                                  type: string
- *                                  example: username
- *                              phone:
- *                                  type: string
- *                                  example: 090100000000
- *                              password:
- *                                  type: string
- *                                  example: password
+ *                          $ref: '#/components/schemas/Register'
  *          responses:
  *              201:
  *                  description: Success
@@ -70,19 +97,14 @@
  *              content:
  *                  application/x-www-form-urlencoded:
  *                      schema:
- *                             $ref: '#/definitions/AuthResponse'
+ *                             $ref: '#/components/schemas/Login'
  *          responses:
  *              200:
  *                  description: Success
  *                  content:
  *                      application/json:
  *                          schema:
- *                              type: object
- *                              properties:
- *                                  token:
- *                                      type: string
- *                                  refreshToken:
- *                                      type: string
+ *                             $ref: '#/definitions/AuthResponse'
  *              400:
  *                  description: Bad Request
  *
