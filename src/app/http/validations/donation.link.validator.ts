@@ -1,35 +1,33 @@
-import {body} from "express-validator"
+import {checkSchema} from "express-validator"
 
 export function StoreValidator() {
-    return [body("link").isString().notEmpty(),
-        body("amount").custom(value => {
-            if ((Number(value) && !isNaN(value)) || value.trim() === '')
-                return true
-
-            throw "Invalid value";
-        })
-    ]
+    return checkSchema({
+        link: {
+            isString: {
+                errorMessage: 'link should be at least 1 chars long',
+            },
+        },
+        password: {
+            isNumeric: {
+                errorMessage: 'amount should be at least 1 chars long',
+            },
+        },
+    });
 }
 
 export function UpdateValidator() {
-    return [
-        body("link").custom(value => {
-            if (!(typeof value == "undefined")){
-                if (typeof value == "string")
-                    return true
-
-                throw "Invalid value";
-            }
-            return true
-        }),
-        body("amount").custom(value => {
-            if (!(typeof value == "undefined")){
-                if ((Number(value) && !isNaN(value)) || value.trim() === '')
-                    return true
-
-                throw "Invalid value";
-            }
-            return true
-        }),
-    ]
+    return checkSchema({
+        link: {
+            isString: {
+                errorMessage: 'link should be at least 1 chars long',
+            },
+            optional: {options: {nullable: true}}
+        },
+        password: {
+            isNumeric: {
+                errorMessage: 'amount should be at least 1 chars long',
+            },
+            optional: {options: {nullable: true}}
+        },
+    });
 }
