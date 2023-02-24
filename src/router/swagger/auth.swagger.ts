@@ -81,11 +81,6 @@
  *                              $ref: '#/definitions/AuthResponse'
  *              400:
  *                  description: Bad Request
- *
- */
-
-/**
- * @swagger
  * /auth/login:
  *      post:
  *          summary: Login User
@@ -107,12 +102,6 @@
  *                             $ref: '#/definitions/AuthResponse'
  *              400:
  *                  description: Bad Request
- *
- */
-
-
-/**
- * @swagger
  * /auth/refresh:
  *      post:
  *          summary: Refresh Token

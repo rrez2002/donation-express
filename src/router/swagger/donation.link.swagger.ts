@@ -98,13 +98,6 @@
  *                              $ref: '#/definitions/DonationLinks'
  *              400:
  *                  description: Bad Request
- *
- *
- */
-
-/**
- * @swagger
- *  /donation_link:
  *      post:
  *          tags: [DonationLink]
  *          summary: create donation link
@@ -122,12 +115,7 @@
  *                              $ref: '#/definitions/StoreDonationLink'
  *              400:
  *                  description: Bad Request
- */
-
-
-/**
- * @swagger
- *  /donation_link/{id}:
+ * /donation_link/{id}:
  *      get:
  *          tags: [DonationLink]
  *          summary: get donation link by ObjectId
@@ -150,14 +138,6 @@
  *                              $ref: '#/definitions/NotFoundDonationLink'
  *              400:
  *                  description: Bad Request
- *
- *
- */
-
-
-/**
- * @swagger
- *  /donation_link/{id}:
  *      patch:
  *          tags: [DonationLink]
  *          summary: update donation link by ObjectId
@@ -185,14 +165,6 @@
  *                              $ref: '#/definitions/NotFoundDonationLink'
  *              400:
  *                  description: Bad Request
- *
- *
- */
-
-
-/**
- * @swagger
- *  /donation_link/{id}:
  *      delete:
  *          tags: [DonationLink]
  *          summary: delete donation link by ObjectId
