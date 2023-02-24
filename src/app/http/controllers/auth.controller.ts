@@ -7,72 +7,84 @@ import {RedisClient} from "../../../utils/redis";
 
 class AuthController {
     async Register(req: Request, res: Response) {
-        const {first_name, last_name, user_name, phone, password} = req.body;
+        try {
+            const {first_name, last_name, user_name, phone, password} = req.body;
 
-        const user = await UserModel.create({
-            first_name, last_name, user_name, phone, password
-        })
-
-        if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
-            const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
-            const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
-            return res.status(201).json({
-                token,refreshToken
+            const user = await UserModel.create({
+                first_name, last_name, user_name, phone, password
             })
-        }
 
-        return res.status(400).json({})
+            if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
+                const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
+                const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
+                return res.status(201).json({
+                    token,refreshToken
+                })
+            }
+
+            return res.status(400).json({})
+        }catch (e) {
+            return res.status(400).json(e)
+        }
     }
 
     async Login(req: Request, res: Response) {
-        const {user_name, password} = req.body;
+        try {
+            const {user_name, password} = req.body;
 
-        const user = await UserModel.findOne({user_name})
+            const user = await UserModel.findOne({user_name})
 
-        if (user) {
-            if (compareSync(password, user.password)) {
-                if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
-                    const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
-                    const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
-                    await RedisClient.setEx(user_name, 3600* 24 * 5,refreshToken)
-                    return res.status(200).json({
-                        token,refreshToken
-                    })
+            if (user) {
+                if (compareSync(password, user.password)) {
+                    if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
+                        const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
+                        const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
+                        await RedisClient.setEx(user_name, 3600* 24 * 5,refreshToken)
+                        return res.status(200).json({
+                            token,refreshToken
+                        })
+                    }
+
                 }
-
+                return res.status(400).json({})
             }
             return res.status(400).json({})
+        }catch (e) {
+            return res.status(400).json(e)
         }
-        return res.status(400).json({})
     }
 
     async RefreshToken(req: Request, res: Response) {
-        if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
-            const {token} = req.body;
-            if (token) {
-                const decodedToken: JwtPayload | string = verify(token, process.env.SECRET_KEY)
-                if (typeof decodedToken == "object") {
-                    if (typeof decodedToken.exp == "number" && new Date().valueOf() >= decodedToken.exp) {
-                        const user_name = decodedToken.data
-                        const refreshToken = await RedisClient.get(user_name)
-                        if (token == refreshToken){
-                            const user = await UserModel.findOne({user_name}, {password: 0})
-                            if (user) {
-                                const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
-                                const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
-                                await RedisClient.setEx(user_name, 3600* 24 * 5,refreshToken)
+        try {
+            if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
+                const {token} = req.body;
+                if (token) {
+                    const decodedToken: JwtPayload | string = verify(token, process.env.SECRET_KEY)
+                    if (typeof decodedToken == "object") {
+                        if (typeof decodedToken.exp == "number" && new Date().valueOf() >= decodedToken.exp) {
+                            const user_name = decodedToken.data
+                            const refreshToken = await RedisClient.get(user_name)
+                            if (token == refreshToken){
+                                const user = await UserModel.findOne({user_name}, {password: 0})
+                                if (user) {
+                                    const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
+                                    const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
+                                    await RedisClient.setEx(user_name, 3600* 24 * 5,refreshToken)
 
-                                return res.status(200)  .json({
-                                    token, refreshToken
-                                })
+                                    return res.status(200)  .json({
+                                        token, refreshToken
+                                    })
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        return res.status(401).json({})
+            return res.status(401).json({})
+        }catch (e) {
+            return res.status(400).json(e)
+        }
     }
 
     async Logout(req: Request, res: Response) {
