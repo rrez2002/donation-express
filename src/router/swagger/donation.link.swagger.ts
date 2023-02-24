@@ -73,6 +73,12 @@
  *             message:
  *                  type: string
  *                  example: delete donation_link success
+ *      NotFoundDonationLink:
+ *          type: object
+ *          properties:
+ *             message:
+ *                  type: string
+ *                  example: donation_link not found
  *
  */
 
@@ -114,6 +120,12 @@
  *                      application/json:
  *                          schema:
  *                              $ref: '#/definitions/StoreDonationLink'
+ *              404:
+ *                  description: Success
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: '#/definitions/NotFoundDonationLink'
  *              400:
  *                  description: Bad Request
  */
@@ -136,6 +148,12 @@
  *                      application/json:
  *                          schema:
  *                              $ref: '#/definitions/DonationLink'
+ *              404:
+ *                  description: Success
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: '#/definitions/NotFoundDonationLink'
  *              400:
  *                  description: Bad Request
  *
@@ -164,6 +182,12 @@
  *                      application/json:
  *                          schema:
  *                              $ref: '#/definitions/UpdateDonationLink'
+ *              404:
+ *                  description: Success
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: '#/definitions/NotFoundDonationLink'
  *              400:
  *                  description: Bad Request
  *
@@ -188,6 +212,12 @@
  *                      application/json:
  *                          schema:
  *                              $ref: '#/definitions/DeleteDonationLink'
+ *              404:
+ *                  description: Success
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: '#/definitions/NotFoundDonationLink'
  *              400:
  *                  description: Bad Request
  *

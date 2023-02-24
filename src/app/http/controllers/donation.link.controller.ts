@@ -25,7 +25,9 @@ class DonationLinkController {
                 return res.status(200).json(donationLink);
             }
 
-            return res.status(404).json({})
+            return res.status(404).json({
+                message: "donation_link not found"
+            });
         }catch (e) {
             return res.status(400).json(e)
         }
