@@ -13,12 +13,23 @@ export function StoreValidator() {
 
 export function UpdateValidator() {
     return [
-        body("link").isString(),
-        body("amount").custom(value => {
-            if ((Number(value) && !isNaN(value)) || value.trim() === '')
-                return true
+        body("link").custom(value => {
+            if (!(typeof value == "undefined")){
+                if (typeof value == "string")
+                    return true
 
-            throw "Invalid value";
+                throw "Invalid value";
+            }
+            return true
+        }),
+        body("amount").custom(value => {
+            if (!(typeof value == "undefined")){
+                if ((Number(value) && !isNaN(value)) || value.trim() === '')
+                    return true
+
+                throw "Invalid value";
+            }
+            return true
         }),
     ]
 }
