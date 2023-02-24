@@ -13,19 +13,22 @@ class DonationLinkController {
     }
 
     async Find(req: Request, res: Response): Promise<Response> {
-        const user_id = req.user._id
-        const link_id = req.params.id
+        try {
+            const link_id = req.params.id
 
-        const donationLink = await DonationLinkModel.findOne({user_id,_id:link_id},{
-            link: 1,
-            amount: 1
-        })
+            const donationLink = await DonationLinkModel.findOne({_id:link_id},{
+                link: 1,
+                amount: 1
+            })
 
-        if (donationLink){
-            return res.status(200).json(donationLink);
+            if (donationLink){
+                return res.status(200).json(donationLink);
+            }
+
+            return res.status(404).json({})
+        }catch (e) {
+            return res.status(400).json(e)
         }
-
-        return res.status(404).json({})
     }
 
     async Store(req: Request, res: Response): Promise<Response> {
@@ -49,25 +52,43 @@ class DonationLinkController {
     }
 
     async Update(req: Request, res: Response): Promise<Response> {
-        const user_id = req.user._id
-        const link_id = req.params.id
-        const body = req.body
+        try {
+            const link_id = req.params.id
+            const body = req.body
 
-        await DonationLinkModel.updateOne({user_id,_id:link_id},{body});
+            const fdonationLink = await DonationLinkModel.findOne({_id:link_id})
 
-        return res.status(200).json({
-            message: "update donation_link success"
-        });
+            if (fdonationLink){
+                const donationLink = await DonationLinkModel.updateOne({_id:link_id},body);
+
+                if (donationLink.matchedCount){
+                    return res.status(200).json({
+                        message: "update donation_link success"
+                    });
+                }
+            }
+
+            return res.status(404).json({
+                message: "donation_link not found"
+            });
+        }catch (e) {
+            return res.status(400).json(e)
+        }
     }
 
     async Destroy(req: Request, res: Response): Promise<Response> {
         const user_id = req.user._id
         const link_id = req.params.id
 
-        await DonationLinkModel.deleteOne({user_id,_id:link_id})
+        const donationLink = await DonationLinkModel.deleteOne({user_id,_id:link_id})
 
-        return res.status(200).json({
-            message: "delete donation_link success"
+        if (donationLink.deletedCount){
+            return res.status(200).json({
+                message: "delete donation_link success"
+            });
+        }
+        return res.status(404).json({
+            message: "donation_link not found"
         });
     }
 }
