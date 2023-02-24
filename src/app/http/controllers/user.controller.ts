@@ -2,45 +2,32 @@ import {UserModel} from "../../models/user.model";
 import {Request, Response} from "express";
 
 class UserController{
-    async Index(req: Request, res: Response) {
-        let userEntity = await UserModel.find({});
+    async Me(req: Request, res: Response) {
+        const user = req.user
 
-        return res.json(userEntity)
+        return res.status(200).json(user)
     }
-
-    async Find(req: Request, res: Response) {
-        const {id} = req.params
-
-        const user = await UserModel.findById(id);
-        if (user) {
-            return res.json(user.fullName())
-        }
-        return res.json("null")
-    }
-
-    async Store() {}
 
     async Update(req: Request, res: Response) {
-        const {id} = req.params
-        const {first_name, last_name, user_name, phone} = req.body;
+        let id = req.user._id
+        //todo: validate
+        const body = req.body;
 
-        const user = await UserModel.updateOne({_id: id}, {
-            first_name, last_name, user_name, phone
+        await UserModel.updateOne({_id: id}, body);
+
+        return res.status(200).json({
+            message: "update user success"
         });
-        if (user.upsertedCount) {
-            return res.json({})
-        }
-        return res.json({})
     }
 
     async Destroy(req: Request, res: Response) {
-        const {id} = req.params
+        let id = req.user._id
 
-        const user = await UserModel.deleteOne({_id: id});
-        if (user.deletedCount) {
-            return res.json({})
-        }
-        return res.json({})
+        await UserModel.deleteOne({_id: id});
+
+        return res.status(200).json({
+            message: "delete user success"
+        });
     }
 }
 

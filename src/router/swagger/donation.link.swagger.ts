@@ -120,12 +120,6 @@
  *                      application/json:
  *                          schema:
  *                              $ref: '#/definitions/StoreDonationLink'
- *              404:
- *                  description: Success
- *                  content:
- *                      application/json:
- *                          schema:
- *                              $ref: '#/definitions/NotFoundDonationLink'
  *              400:
  *                  description: Bad Request
  */
@@ -149,7 +143,7 @@
  *                          schema:
  *                              $ref: '#/definitions/DonationLink'
  *              404:
- *                  description: Success
+ *                  description: NotFound
  *                  content:
  *                      application/json:
  *                          schema:
@@ -173,8 +167,9 @@
  *                  type: string
  *          requestBody:
  *              content:
- *                  schema:
- *                      $ref: '#/definitions/DonationLink'
+ *                  application/x-www-form-urlencoded:
+ *                      schema:
+ *                          $ref: '#/components/schemas/UpdateDonationLink'
  *          responses:
  *              200:
  *                  description: Success
@@ -183,7 +178,7 @@
  *                          schema:
  *                              $ref: '#/definitions/UpdateDonationLink'
  *              404:
- *                  description: Success
+ *                  description: NotFound
  *                  content:
  *                      application/json:
  *                          schema:
@@ -213,7 +208,7 @@
  *                          schema:
  *                              $ref: '#/definitions/DeleteDonationLink'
  *              404:
- *                  description: Success
+ *                  description: NotFound
  *                  content:
  *                      application/json:
  *                          schema:
