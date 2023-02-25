@@ -7,10 +7,20 @@ export function StoreValidator() {
                 errorMessage: 'link should be at least 1 chars long',
             },
         },
-        password: {
-            isNumeric: {
-                errorMessage: 'amount should be at least 1 chars long',
+        amount: {
+            custom: {
+                options: (amount: number|undefined) => {
+                    if (amount == Number(amount)){
+                        if (amount < 1000){
+                            return Promise.reject();
+                        }
+                    }
+                    return Promise.resolve();
+                },
+                errorMessage: 'amount amount should be at grater 1000',
             },
+            optional: {options: {nullable: true}}
+
         },
     });
 }
@@ -23,9 +33,18 @@ export function UpdateValidator() {
             },
             optional: {options: {nullable: true}}
         },
-        password: {
-            isNumeric: {
-                errorMessage: 'amount should be at least 1 chars long',
+        amount: {
+            isNumeric: true,
+            custom: {
+                options: (amount: number|undefined) => {
+                    if (amount == Number(amount)){
+                        if (amount < 1000){
+                            return Promise.reject();
+                        }
+                    }
+                    return Promise.resolve();
+                },
+                errorMessage: 'amount amount should be at grater 1000',
             },
             optional: {options: {nullable: true}}
         },
