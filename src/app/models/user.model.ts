@@ -19,8 +19,8 @@ export type User = IUser & IUserMethods
 type UserModel = Model<IUser, {}, IUserMethods>;
 
 const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
-    first_name: {type: String, required: true},
-    last_name: {type: String, required: true},
+    first_name: {type: String, required: true, min:3,max:30},
+    last_name: {type: String, required: true, min:3,max:30},
     user_name: {type: String, required: true, unique: true},
     phone: {type: String, required: true, unique: true},
     password: {type: String, required: true},

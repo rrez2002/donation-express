@@ -4,14 +4,18 @@ import {UserModel} from "../../models/user.model";
 export function RegisterValidator() {
     return checkSchema({
         first_name: {
-            isString: {
-                errorMessage: 'first name should be at least 1 chars long',
-            },
+            isString: true,
+            isLength: {
+                options:{min:3,max:30},
+                errorMessage: 'first name should be at least 3 characters and at most 30',
+            }
         },
         last_name: {
-            isString: {
-                errorMessage: 'last name should be at least 1 chars long',
-            },
+            isString: true,
+            isLength: {
+                options:{min:3,max:30},
+                errorMessage: 'last name should be at least 3 characters and at most 30',
+            }
         },
         user_name: {
             isString: {
