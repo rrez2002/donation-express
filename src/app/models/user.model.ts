@@ -1,18 +1,6 @@
-import {Model, model, Schema, Types} from "mongoose";
+import {Model, model, Schema} from "mongoose";
 import {hashSync} from "bcrypt";
-
-interface IUser {
-    _id: Types.ObjectId
-    first_name: string,
-    last_name: string,
-    user_name: string,
-    phone: string,
-    password: string,
-}
-
-interface IUserMethods {
-    fullName(): string;
-}
+import {IUser, IUserMethods} from "../../interfaces/user.interface";
 
 export type User = IUser & IUserMethods
 

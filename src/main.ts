@@ -21,12 +21,12 @@ const db_url: string = process.env.DB_URL || `mongodb://localhost:27017/${projec
 class Application {
     private _app = express();
 
-    constructor(PORT: string, DB_URL: string) {
+    constructor(URL: string, PORT: string, DB_URL: string) {
         this.configApplication();
         this.configDatabase(DB_URL);
         this.configRedis();
         this.createRouters();
-        this.createServer(PORT);
+        this.createServer(URL,PORT);
     }
 
     private configApplication(): void {
@@ -67,7 +67,7 @@ class Application {
         }
     }
 
-    private createServer(port: string): void {
+    private createServer(url: string,port: string): void {
         this._app.listen(port, () => {
             console.log(`[server]: Server is running at ${url}:${port}`);
         })
@@ -95,7 +95,7 @@ class Application {
 }
 
 function Main() {
-    new Application(port, db_url)
+    new Application(url,port, db_url)
 }
 
 Main()
