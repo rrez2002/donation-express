@@ -16,22 +16,33 @@ export function UpdateValidator(){
             custom: {
                 options: async (user_name) => {
                     const user = await UserModel.findOne({user_name},{user_name:true})
-                    return !user;
+                    if (user){
+                        return Promise.reject();
+                    }
+                    return Promise.resolve()
                 },
-                // errorMessage: ""
+                errorMessage: "user_name already in use"
             },
             optional: { options: { nullable: true } },
         },
         phone: {
-            isString: true,
+            isString: {
+                errorMessage: 'phone should be at least 1 chars long',
+            },
+            isMobilePhone: {
+                options: "fa-IR", errorMessage: 'Must provide a valid IR phone number.'
+            },
             custom: {
                 options: async (phone) => {
-                    const user = await UserModel.findOne({phone},{phone:true})
-                    return !user;
+                    return UserModel.findOne({phone}, {phone: true}).then(user => {
+                        if (user) {
+                            return Promise.reject();
+                        }
+                        return Promise.resolve()
+                    })
                 },
-                // errorMessage: ""
+                errorMessage: "phone already in use"
             },
-            optional: { options: { nullable: true } },
         },
         password: {
             isString: true,
