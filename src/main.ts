@@ -37,32 +37,34 @@ class Application {
         this._app.use(morgan('dev'))
 
 
-        this._app.use("/api-doc", serve, setup(swaggerJSDoc({
-            swaggerDefinition: {
-                openapi: "3.0.0",
-                info: {
-                    title: "donation-express",
-                    version: "1.0.0",
-                    description: "express project for donate to users"
-                },
-                schemes: ["http", "https"],
-                servers: [{url: `${url}:${port}`}],
-                components:{
-                    securitySchemes : {
-                        BearerAuth : {
-                            type: "http",
-                            scheme: "bearer",
-                            bearerFormat: "JWT",
+        if (process.env.NODE_ENV === 'development'){
+            this._app.use("/api-doc", serve, setup(swaggerJSDoc({
+                swaggerDefinition: {
+                    openapi: "3.0.0",
+                    info: {
+                        title: "donation-express",
+                        version: "1.0.0",
+                        description: "express project for donate to users"
+                    },
+                    schemes: ["http", "https"],
+                    servers: [{url: `${url}:${port}`}],
+                    components:{
+                        securitySchemes : {
+                            BearerAuth : {
+                                type: "http",
+                                scheme: "bearer",
+                                bearerFormat: "JWT",
 
+                            }
                         }
-                    }
+                    },
+                    security : [{BearerAuth : [] }]
                 },
-                security : [{BearerAuth : [] }]
-            },
-            apis: [`${__dirname}/router/swagger/*.ts`,],
-        }), {
-            explorer: true
-        }));
+                apis: [`${__dirname}/router/swagger/*.ts`,],
+            }), {
+                explorer: true
+            }));
+        }
     }
 
     private createServer(port: string): void {
