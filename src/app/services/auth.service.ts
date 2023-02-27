@@ -1,8 +1,9 @@
-import {IUser, UserModel} from "../models/user.model";
+import {UserModel} from "../models/user.model";
 import {JwtPayload, sign, verify} from "jsonwebtoken";
 import {compareSync} from "bcrypt";
 import {RedisClient} from "../../utils/redis";
-import {AuthResponse} from "../../interfaces/Auth.interface";
+import {AuthResponse} from "../../interfaces/auth.interface";
+import {IUser} from "../../interfaces/user.interface";
 
 export default new class AuthService{
     async Register(userData:IUser):Promise<AuthResponse | any>{
