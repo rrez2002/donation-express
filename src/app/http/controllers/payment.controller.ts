@@ -1,34 +1,35 @@
 import {Request, Response} from "express";
-import {PayIR} from "../../../utils/payment.gateways";
 import {DonationLinkModel} from "../../models/donation.link.model";
-import axios from "axios";
-
-
+import PaymentService from "../../services/payment.service";
+import {GatewayEnum} from "../../../enums/gateway.enum";
 
 class PaymentController {
     async Gateway (req: Request, res: Response) {
-        const donation_link = req.params.donation_link
+        try {
+            const donation_link = req.params.donation_link
 
-        const linkModel = await DonationLinkModel.findOne({link:donation_link},{
-            link:1,
-            amount:1,
-        })
+            const {amount , gateway} = req.body
 
-        if (linkModel){
-            const amount:number = req.body.amount
-            await axios.post(PayIR.sendData.url, JSON.stringify({
-                api: PayIR.merchantId,
-                amount: amount*10,
-                redirect: PayIR.callbackUrl,
-                mobile: req.user.phone,
-            })).then(response => {
-                console.log(response.data)
-            }).catch(err => {
-                console.log(err.response.data)
+            const linkModel = await DonationLinkModel.findOne({link:donation_link},{
+                link:1,
+                amount:1,
             })
-        }
 
-        return res.json(PayIR)
+            if (linkModel){
+               if (gateway == GatewayEnum.PAYIR){
+                   const result = await PaymentService.payIrGateway(amount, req.user.phone)
+
+                   return res.json(result)
+               }
+            }
+
+            return res.status(404).json({
+                message: "donation_link not found"
+            });
+
+        }catch (e) {
+            return res.status(400).json(e)
+        }
 
     }
 

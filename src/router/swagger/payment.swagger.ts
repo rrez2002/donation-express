@@ -5,8 +5,12 @@
  *          Gateway:
  *              type: object
  *              required:
+ *                  -   gateway
  *                  -   amount
  *              properties:
+ *                  gateway:
+ *                      type: string
+ *                      example: payir
  *                  amount:
  *                      type: number
  *                      example: 1000
@@ -22,6 +26,11 @@
  *              status:
  *                  type: string
  *              token:
+ *                  type: string
+ *      BadRequestResponse:
+ *          type: object
+ *          properties:
+ *              errorMessage:
  *                  type: string
  *
  *
@@ -56,6 +65,10 @@
  *                              $ref: '#/definitions/GatewayResponse'
  *              400:
  *                  description: Bad Request
+ *                  content:
+ *                      application/json:
+ *                          schema:
+ *                              $ref: '#/definitions/BadRequestResponse'
  *
  *
  */

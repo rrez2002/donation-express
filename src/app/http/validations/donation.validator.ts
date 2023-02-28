@@ -1,9 +1,22 @@
 import {checkSchema} from "express-validator"
+import {GatewayEnum} from "../../../enums/gateway.enum";
 // import {DonationLinkModel} from "../../models/donation.link.model";
 // import {Request, Response} from "express";
 
 export function Gateway() {
     return checkSchema({
+        gateway: {
+            isString: true,
+            custom:{
+                options: async (value: any) => {
+                    if (Object.values(GatewayEnum).includes(value)){
+                        return Promise.resolve()
+                    }
+                    return Promise.reject();
+                },
+                errorMessage: 'gateway is undefined',
+            }
+        },
         amount: {
             isNumeric: true,
             custom: {
