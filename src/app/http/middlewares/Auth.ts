@@ -1,9 +1,8 @@
 import {NextFunction, Request, Response} from "express";
-import {JwtPayload, verify} from "jsonwebtoken";
-import {UserModel} from "../../models/user.model";
+import {verify} from "jsonwebtoken";
 
-function BearerToken(authorization: string) : string | null {
-    if (authorization.match(new RegExp('^Bearer '))){
+function BearerToken(authorization: string): string | null {
+    if (authorization.match(new RegExp('^Bearer '))) {
         return authorization.split(" ")[1];
     }
     return null
@@ -11,28 +10,19 @@ function BearerToken(authorization: string) : string | null {
 
 
 export async function Auth(req: Request, res: Response, next: NextFunction) {
+    const token = BearerToken(req.header("Authorization") as string);
+    if (token == null) return res.status(401).json({
+        message: "unauthorized"
+    })
 
-    const authorization = req.header("Authorization")
+    await verify(token, process.env.PRIVET_KEY as string, async (err: any, payload: any) => {
 
-    if (authorization){
-        if (process.env.PRIVET_KEY){
-            const token = BearerToken(authorization);
-            if (token){
-                const decodedToken : JwtPayload | string  = verify(token,process.env.PRIVET_KEY)
-                if (typeof decodedToken == "object"){
-                    if(typeof decodedToken.exp == "number" && new Date().valueOf() >= decodedToken.exp) {
-                        const user_name = decodedToken.data
-                        const user = await UserModel.findOne({user_name},{password:0})
-                        if (user){
-                            req.user = user;
-                            return next()
-                        }
-                    }
-                }
-            }
-        }
-    }
+        if (err) return res.status(401).json({
+            message: "unauthorized"
+        })
 
-    return res.status(401).json({})
-
+        req.user = payload.data;
+        return;
+    })
+    return next()
 }
