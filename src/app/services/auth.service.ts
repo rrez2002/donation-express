@@ -1,24 +1,22 @@
-import {UserModel} from "../models/user.model";
-import {JwtPayload, sign, verify} from "jsonwebtoken";
-import {compareSync} from "bcrypt";
+import {IUser, UserModel} from "../models/user.model";
+import {sign, verify} from "jsonwebtoken";
 import {RedisClient} from "../../utils/redis";
-import {AuthResponse} from "../../interfaces/auth.interface";
-import {IUser} from "../../interfaces/user.interface";
+import UserService from "./user.service";
+import VerifyPassword from "../../utils/password";
+import {TAuthResponse} from "../http/resources/auth.response";
 
 export default new class AuthService{
-    async Register(userData:IUser):Promise<AuthResponse | any>{
+    async Register(userData:Omit<IUser, "_id">):Promise<TAuthResponse>{
         try {
             const user = await UserModel.create(userData)
 
-            if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
-                const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
-                const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
+            const token = sign({data: user}, process.env.PRIVET_KEY as string, {expiresIn: "3 days"});
+            const refreshToken = sign({data: user}, process.env.SECRET_KEY as string, {expiresIn: "5 days"});
 
-                return Promise.resolve({
-                    token,
-                    refreshToken
-                });
-            }
+            return Promise.resolve({
+                token,
+                refreshToken
+            });
         }catch (e) {
             return Promise.reject({
                 message:(e as Error).message
@@ -26,23 +24,17 @@ export default new class AuthService{
         }
     }
 
-    async Login(user_name:string,password:string):Promise<AuthResponse|any>{
+    async Login(userData: Pick<IUser, "user_name" | "password">):Promise<TAuthResponse>{
         try {
-            const user = await UserModel.findOne({user_name})
+            if (await VerifyPassword(userData.user_name, userData.password)) {
+                const user = await UserService.FindByUserName(userData.user_name)
+                const token = sign({data: user}, process.env.PRIVET_KEY as string, {expiresIn: "3 days"});
+                const refreshToken = sign({data: user}, process.env.SECRET_KEY as string, {expiresIn: "5 days"});
+                await RedisClient.setEx(userData.user_name, 3600 * 24 * 5, refreshToken)
 
-            if (user) {
-                if (compareSync(password, user.password)) {
-                    if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
-                        const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
-                        const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
-                        await RedisClient.setEx(user_name, 3600* 24 * 5,refreshToken)
-
-                        return Promise.resolve({
-                            token,
-                            refreshToken
-                        });
-                    }
-                }
+                return Promise.resolve({
+                    token, refreshToken
+                });
             }
             return Promise.reject({
                 message: "invalid username or password"
@@ -54,33 +46,42 @@ export default new class AuthService{
         }
     }
 
-    async RefreshToken(token:string):Promise<AuthResponse|any>{
+    async RefreshToken(token:string):Promise<TAuthResponse>{
         try {
-            if (process.env.PRIVET_KEY && process.env.SECRET_KEY) {
-                const decodedToken: JwtPayload | string = verify(token, process.env.SECRET_KEY)
 
-                if (typeof decodedToken == "object") {
-                    if (typeof decodedToken.exp == "number" && new Date().valueOf() >= decodedToken.exp) {
-                        const user_name = decodedToken.data
-                        const refreshToken = await RedisClient.get(user_name)
-                        if (token == refreshToken) {
-                            const user = await UserModel.findOne({user_name}, {password: 0})
-                            if (user) {
-                                const token = sign({data: user.user_name}, process.env.PRIVET_KEY, {expiresIn: "3 days"});
-                                const refreshToken = sign({data: user.user_name}, process.env.SECRET_KEY, {expiresIn: "5 days"});
-                                await RedisClient.setEx(user_name, 3600 * 24 * 5, refreshToken)
+            let tokens: TAuthResponse = {
+                refreshToken:"",
+                token:""
+            };
 
-                                return Promise.resolve({
-                                    token, refreshToken
-                                });
-                            }
+            await verify(token, process.env.PRIVET_KEY as string,async (err: any, payload: any) => {
+
+                if (err) return Promise.reject({
+                    message: "invalid token"
+                });
+
+                const refreshToken = await RedisClient.get(payload.data.user_name)
+                if (token == refreshToken) {
+                    const user = await UserService.FindById(payload.data._id)
+                    if (user) {
+                        const token = sign({data: user}, process.env.PRIVET_KEY as string, {expiresIn: "3 days"});
+                        const refreshToken = sign({data: user}, process.env.SECRET_KEY as string, {expiresIn: "5 days"});
+                        await RedisClient.setEx(user.user_name, 3600 * 24 * 5, refreshToken)
+
+                        return tokens = {
+                            token,
+                            refreshToken
                         }
                     }
                 }
-            }
+            })
+
+            if (!tokens.token || !tokens.refreshToken) return Promise.resolve(tokens);
+
             return Promise.reject({
                 message: "invalid token"
             });
+
         } catch (e) {
             return Promise.reject({
                 message:(e as Error).message
