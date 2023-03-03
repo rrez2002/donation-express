@@ -1,5 +1,6 @@
 import {validationResult} from "express-validator";
 import {NextFunction, Request, Response} from "express";
+import {JsonResponse} from "../resources/response";
 
 export function validationRequest(req: Request, res: Response, next: NextFunction) {
     const result = validationResult(req);
@@ -7,6 +8,5 @@ export function validationRequest(req: Request, res: Response, next: NextFunctio
     if(result.isEmpty()){
         return next()
     }
-    return res.status(400).json(result)
-
+    return new JsonResponse(res, result, 400);
 }

@@ -1,50 +1,51 @@
 import {Request, Response} from "express";
 import UserService from "../../services/user.service";
+import {UserResponse} from "../resources/user.response";
+import {ErrorResponse} from "../resources/error.response";
+import {JsonResponse, messageResponse} from "../resources/response";
 
 class UserController{
-    async Me(req: Request, res: Response) {
+    async Me(req: Request, res: Response): Promise<UserResponse>  {
         const user = req.user
 
-        return res.status(200).json(user)
+        return new UserResponse(res , user)
     }
 
-    async Update(req: Request, res: Response) {
+    async Update(req: Request, res: Response):Promise<JsonResponse<messageResponse>> {
         try {
-            let id = req.user._id
+            const id = req.user?._id
             const body = req.body;
 
-            if (id){
-                await UserService.Update(id, body)
-
-                return res.status(200).json({
-                    message: "update user success"
-                });
-            }
-            return res.status(400).json({
+            if (!id) return new ErrorResponse(res , {
                 message: "user not found"
             })
+
+            await UserService.Update(id, body)
+
+            return new JsonResponse(res,{
+                message: "update user success"
+            });
         }catch (e) {
-            return res.status(400).json(e)
+            return new ErrorResponse(res , e as Error)
         }
     }
 
-    async Destroy(req: Request, res: Response) {
+    async Destroy(req: Request, res: Response):Promise<JsonResponse<messageResponse>> {
         try {
-            let id = req.user._id
+            const id = req.user?._id
 
-            if (id){
-                await UserService.Destroy(id)
-
-                return res.status(200).json({
-                    message: "delete user success"
+            if (!id) return new ErrorResponse(res, {
+                    message: "user not found"
                 });
-            }
-            return res.status(400).json({
-                message: "user not found"
-            })
-        }catch (e) {
-            return res.status(400).json(e)
 
+            await UserService.Destroy(id)
+
+            return new JsonResponse(res, {
+                message: "delete user success"
+            });
+
+        }catch (e) {
+            return new ErrorResponse(res , e as Error)
         }
     }
 }

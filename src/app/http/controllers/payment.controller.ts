@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
 import {DonationLinkModel} from "../../models/donation.link.model";
 import PaymentService from "../../services/payment.service";
-import {GatewayEnum} from "../../../enums/gateway.enum";
+import {GatewayEnum} from "../../../utils/payment.gateways";
+import {ErrorResponse} from "../resources/error.response";
+import {JsonResponse} from "../resources/response";
 
 class PaymentController {
     async Gateway (req: Request, res: Response) {
@@ -15,22 +17,22 @@ class PaymentController {
                 amount:1,
             })
 
-            if (linkModel){
-               if (gateway == GatewayEnum.PAYIR){
-                   const result = await PaymentService.payIrGateway(amount, req.user.phone)
+            if (!linkModel) return new ErrorResponse(res,{
+                message: "donation_link not found"
+            }, 404)
 
-                   return res.json(result)
-               }
+
+            if (gateway == GatewayEnum.PAYIR) {
+                const result = await PaymentService.payIrGateway(amount, req.user.phone)
+
+                return new JsonResponse(res, result)
             }
 
-            return res.status(404).json({
-                message: "donation_link not found"
-            });
+            return new JsonResponse(res, {})
 
         }catch (e) {
-            return res.status(400).json(e)
+            return new ErrorResponse(res, e as Error)
         }
-
     }
 
     async Verify(req: Request, res: Response) {

@@ -1,28 +1,31 @@
 import {Request, Response} from "express";
 import AuthService from "../../services/auth.service";
+import {AuthResponse} from "../resources/auth.response";
+import {ErrorResponse} from "../resources/error.response";
+import {IUser} from "../../models/user.model";
 
 class AuthController {
     async Register(req: Request, res: Response) {
         try {
-            const {first_name, last_name, user_name, phone, password} = req.body;
+            const data: IUser = req.body;
 
-            const response = await AuthService.Register({first_name, last_name, user_name, phone, password})
+            const response = await AuthService.Register(data)
 
-            return res.status(201).json(response);
+            return new AuthResponse(res, response)
         }catch (e) {
-            return res.status(400).json(e)
+            return new ErrorResponse(res, e as Error)
         }
     }
 
     async Login(req: Request, res: Response) {
         try {
-            const {user_name, password} = req.body;
+            const data = req.body;
 
-            const response = await AuthService.Login(user_name, password)
+            const response = await AuthService.Login(data)
 
-            return res.status(200).json(response)
+            return new AuthResponse(res, response)
         }catch (e) {
-            return res.status(400).json(e)
+            return new ErrorResponse(res, e as Error)
         }
     }
 
@@ -32,9 +35,9 @@ class AuthController {
 
             const response = await AuthService.RefreshToken(token)
 
-            return res.status(200).json(response)
+            return new AuthResponse(res, response)
         }catch (e) {
-            return res.status(400).json(e)
+            return new ErrorResponse(res, e as Error)
         }
     }
 

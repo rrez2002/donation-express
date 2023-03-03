@@ -1,97 +1,87 @@
-import {DonationLink, DonationLinkModel} from "../../models/donation.link.model";
+import {DonationLink} from "../../models/donation.link.model";
 import {Request, Response} from "express";
+import {ErrorResponse} from "../resources/error.response";
+import DonationLinkService from "../../services/donation.link.service";
+import {Types} from "mongoose";
+import {DonationLinkCollection, DonationLinkResponse} from "../resources/donation.link.response";
+import {JsonResponse, messageResponse} from "../resources/response";
 
 class DonationLinkController {
-    async Index(req: Request, res: Response): Promise<Response> {
-        const user_id = req.user._id
-        const donationLinks: DonationLink[] = await DonationLinkModel.find({user_id},{
-            link: 1,
-            amount: 1
-        })
-
-        return res.json(donationLinks)
-    }
-
-    async Find(req: Request, res: Response): Promise<Response> {
+    async Index(req: Request, res: Response) {
         try {
-            const link_id = req.params.id
+            const user_id = req.user._id
+            const donationLinks: DonationLink[] = await DonationLinkService.Find(new Types.ObjectId(user_id));
 
-            const donationLink = await DonationLinkModel.findOne({_id:link_id},{
-                link: 1,
-                amount: 1
-            })
-
-            if (donationLink){
-                return res.status(200).json(donationLink);
-            }
-
-            return res.status(404).json({
-                message: "donation_link not found"
-            });
+            console.log(typeof donationLinks)
+            return new DonationLinkCollection(res, donationLinks)
         }catch (e) {
-            return res.status(400).json(e)
+            return new ErrorResponse(res, e as Error);
         }
     }
 
-    async Store(req: Request, res: Response): Promise<Response> {
+    async Find(req: Request, res: Response): Promise<DonationLinkResponse|ErrorResponse> {
+        try {
+            const link_id: string = req.params.id;
+
+            const donationLink = await DonationLinkService.FindById(new Types.ObjectId(link_id));
+
+            if (!donationLink) return new ErrorResponse(res, {
+                    message: "donation_link not found"
+                }, 404);
+
+            return new DonationLinkResponse(res, donationLink);
+        }catch (e) {
+            return new ErrorResponse(res, e as Error);
+        }
+    }
+
+    async Store(req: Request, res: Response): Promise<JsonResponse<messageResponse>> {
         try {
             const {link, amount} = req.body
 
             const userId = req.user._id
 
-            await DonationLinkModel.create({
-                user_id: userId,
+            await DonationLinkService.Create({
+                user_id: new Types.ObjectId(userId),
                 link,
-                amount
+                amount,
             })
 
-            return res.status(201).json({
+            return new JsonResponse(res, {
                 message: "create donation_link success"
-            });
+            }, 201);
         } catch (e) {
-            return res.status(400).json(e)
+            return new ErrorResponse(res,e as Error)
         }
     }
 
-    async Update(req: Request, res: Response): Promise<Response> {
+    async Update(req: Request, res: Response): Promise<JsonResponse<messageResponse>> {
         try {
             const link_id = req.params.id
             const body = req.body
 
-            const fdonationLink = await DonationLinkModel.findOne({_id:link_id})
+            await DonationLinkService.Update(new Types.ObjectId(link_id) ,body)
 
-            if (fdonationLink){
-                const donationLink = await DonationLinkModel.updateOne({_id:link_id},body);
-
-                if (donationLink.matchedCount){
-                    return res.status(200).json({
-                        message: "update donation_link success"
-                    });
-                }
-            }
-
-            return res.status(404).json({
-                message: "donation_link not found"
+            return new JsonResponse(res,{
+                message: "update donation_link success"
             });
         }catch (e) {
-            return res.status(400).json(e)
+            return new ErrorResponse(res,e as Error)
         }
     }
 
-    async Destroy(req: Request, res: Response): Promise<Response> {
-        const user_id = req.user._id
-        const link_id = req.params.id
+    async Destroy(req: Request, res: Response): Promise<JsonResponse<messageResponse>> {
+        try {
+            const link_id = req.params.id
 
-        const donationLink = await DonationLinkModel.deleteOne({user_id,_id:link_id})
+            await DonationLinkService.Destroy(new Types.ObjectId(link_id))
 
-        if (donationLink.deletedCount){
-            return res.status(200).json({
+            return new JsonResponse(res, {
                 message: "delete donation_link success"
             });
+        }catch (e) {
+            return new ErrorResponse(res, e as Error)
         }
-        return res.status(404).json({
-            message: "donation_link not found"
-        });
     }
 }
 

@@ -1,5 +1,5 @@
 import {checkSchema} from "express-validator"
-import {GatewayEnum} from "../../../enums/gateway.enum";
+import {GatewayEnum} from "../../../utils/payment.gateways";
 // import {DonationLinkModel} from "../../models/donation.link.model";
 // import {Request, Response} from "express";
 
