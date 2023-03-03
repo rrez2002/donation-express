@@ -1,6 +1,7 @@
 import {model, Model, Schema, Types} from "mongoose";
 
-interface IDonationLink {
+export interface IDonationLink {
+    _id: Types.ObjectId,
     user_id: Types.ObjectId,
     link: String,
     amount: number | null

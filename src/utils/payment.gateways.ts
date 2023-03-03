@@ -5,6 +5,11 @@ interface IGatewayApi {
     url:string,
 }
 
+export enum GatewayEnum {
+    "ZARINPAL" = "zarinpal",
+    "PAYIR" = "payir",
+}
+
 class PaymentGateway {
     constructor(
         private merchant_id: string,
@@ -51,21 +56,21 @@ export const PayIR:PaymentGateway = new PaymentGateway(
     },
     `${url}:${port}/payment/verify`)
 
-// export const ZarinPal:PaymentGateway = new PaymentGateway(
-//     process.env.PAYIR_MERCHANT_ID|| "",
-//     {
-//         method:"POST",
-//         url:"https://api.zarinpal.com/pg/v4/payment/request.json",
-//     },
-//     {
-//         method:"GET",
-//         url:"https://www.zarinpal.com/pg/StartPay/",
-//     },
-//     {
-//         method:"POST",
-//         url:"https://api.zarinpal.com/pg/v4/payment/verify.json",
-//     },
-//     `${url}:${port}/payment/verify`)
+export const ZarinPal:PaymentGateway = new PaymentGateway(
+    process.env.PAYIR_MERCHANT_ID|| "",
+    {
+        method:"POST",
+        url:"https://api.zarinpal.com/pg/v4/payment/request.json",
+    },
+    {
+        method:"GET",
+        url:"https://www.zarinpal.com/pg/StartPay/",
+    },
+    {
+        method:"POST",
+        url:"https://api.zarinpal.com/pg/v4/payment/verify.json",
+    },
+    `${url}:${port}/payment/verify`)
 
 
 
