@@ -1,6 +1,6 @@
 import express, {Request, Response} from 'express';
 import dotenv from 'dotenv';
-import {connect} from 'mongoose';
+import mongoose from 'mongoose';
 import Path from 'path';
 import Router from "./router/router";
 import {User} from "./app/models/user.model";
@@ -74,10 +74,10 @@ class Application {
     }
 
     private configDatabase(DB_URL: string): void {
-        connect(DB_URL, (error) => {
-            if (error) throw error;
-            console.log("connect db success..")
-        })
+        mongoose.set("strictQuery", true)
+        mongoose.connect(DB_URL, (err) => {
+            console.log(err ? err.message : "server connected to mongodb");
+        });
     }
 
     private async configRedis(){
