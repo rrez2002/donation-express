@@ -1,17 +1,18 @@
-import {IUser, UserModel} from "../models/user.model";
-import {sign, verify} from "jsonwebtoken";
+import {UserModel} from "../models/user.model";
+import {verify} from "jsonwebtoken";
 import {RedisClient} from "../../utils/redis";
 import UserService from "./user.service";
-import VerifyPassword from "../../utils/password";
+import  {VerifyPassword , GenerateJwtToken, GenerateRefreshToken } from "../../utils/password";
 import {TAuthResponse} from "../http/resources/auth.response";
+import { LoginDTO, RegisterDTO } from "../http/dtos/auth.dto";
 
 export default new class AuthService{
-    async Register(userData:Omit<IUser, "_id">):Promise<TAuthResponse>{
+    async Register(userData:RegisterDTO):Promise<TAuthResponse>{
         try {
             const user = await UserModel.create(userData)
 
-            const token = sign({data: user}, process.env.PRIVET_KEY as string, {expiresIn: "3 days"});
-            const refreshToken = sign({data: user}, process.env.SECRET_KEY as string, {expiresIn: "5 days"});
+            const token = await GenerateJwtToken(user);
+            const refreshToken = await GenerateRefreshToken(user)
 
             return Promise.resolve({
                 token,
@@ -24,13 +25,13 @@ export default new class AuthService{
         }
     }
 
-    async Login(userData: Pick<IUser, "user_name" | "password">):Promise<TAuthResponse>{
+    async Login(userData: LoginDTO):Promise<TAuthResponse>{
         try {
             if (await VerifyPassword(userData.user_name, userData.password)) {
-                const user = await UserService.FindByUserName(userData.user_name)
-                const token = sign({data: user}, process.env.PRIVET_KEY as string, {expiresIn: "3 days"});
-                const refreshToken = sign({data: user}, process.env.SECRET_KEY as string, {expiresIn: "5 days"});
-                await RedisClient.setEx(userData.user_name, 3600 * 24 * 5, refreshToken)
+                const user = await UserService.FindByUserName(userData)
+                
+                const token = await GenerateJwtToken(user);
+                const refreshToken = await GenerateRefreshToken(user)
 
                 return Promise.resolve({
                     token, refreshToken
@@ -64,9 +65,8 @@ export default new class AuthService{
                 if (token == refreshToken) {
                     const user = await UserService.FindById(payload.data._id)
                     if (user) {
-                        const token = sign({data: user}, process.env.PRIVET_KEY as string, {expiresIn: "3 days"});
-                        const refreshToken = sign({data: user}, process.env.SECRET_KEY as string, {expiresIn: "5 days"});
-                        await RedisClient.setEx(user.user_name, 3600 * 24 * 5, refreshToken)
+                        const token = await GenerateJwtToken(user);
+                        const refreshToken = await GenerateRefreshToken(user)
 
                         return tokens = {
                             token,
