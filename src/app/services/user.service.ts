@@ -1,10 +1,10 @@
-import {IUser, User, UserModel} from "../models/user.model";
-import {Types} from "mongoose";
+import {User, UserModel} from "../models/user.model";
+import { FindByIdDTO, FindByUserNameDTO, UpdateDTO } from "../http/dtos/user.dto";
 
 export default new class UserService{
-    async FindById(id:Types.ObjectId):Promise<User> {
+    async FindById(query:FindByIdDTO):Promise<User> {
         try {
-            const user = await UserModel.findById({_id: id}, {
+            const user = await UserModel.findById({query}, {
                 first_name: 1, last_name: 1, user_name: 1, phone: 1,
             });
 
@@ -20,9 +20,9 @@ export default new class UserService{
         }
     }
 
-    async FindByUserName(user_name:string):Promise<User>{
+    async FindByUserName(query:FindByUserNameDTO):Promise<User>{
         try {
-            const user:User|null = await UserModel.findOne({user_name},  {
+            const user:User|null = await UserModel.findOne({query},  {
                 first_name: 1, last_name: 1, user_name: 1, phone: 1,
             });
 
@@ -38,9 +38,9 @@ export default new class UserService{
         }
     }
 
-    async Update(id:Types.ObjectId,body:Partial<IUser>):Promise<any>{
+    async Update(query:FindByIdDTO,body:UpdateDTO):Promise<any>{
         try {
-            await UserModel.updateOne({_id: id}, {
+            await UserModel.updateOne({query}, {
                 $set: body
             });
 
@@ -52,9 +52,9 @@ export default new class UserService{
         }
     }
 
-    async Destroy(id:Types.ObjectId):Promise<any>{
+    async Destroy(query:FindByIdDTO):Promise<any>{
         try {
-            await UserModel.deleteOne({_id: id});
+            await UserModel.deleteOne({query});
 
             return Promise.resolve();
         }catch (e) {

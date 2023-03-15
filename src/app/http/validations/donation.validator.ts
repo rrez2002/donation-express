@@ -1,7 +1,6 @@
 import {checkSchema} from "express-validator"
 import {GatewayEnum} from "../../../utils/payment.gateways";
 // import {DonationLinkModel} from "../../models/donation.link.model";
-// import {Request, Response} from "express";
 
 export function Gateway() {
     return checkSchema({
@@ -35,6 +34,10 @@ export function Gateway() {
                 },
                 errorMessage: 'amount should be at grater 1000',
             },
+        },
+        description: {
+            isString: true,
+            optional: { options: { nullable: true } },
         },
     });
 }

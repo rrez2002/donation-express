@@ -10,7 +10,7 @@ class DonationLinkController {
     async Index(req: Request, res: Response) {
         try {
             const user_id = req.user._id
-            const donationLinks: DonationLink[] = await DonationLinkService.Find(new Types.ObjectId(user_id));
+            const donationLinks: DonationLink[] = await DonationLinkService.Find({user_id});
 
             console.log(typeof donationLinks)
             return new DonationLinkCollection(res, donationLinks)

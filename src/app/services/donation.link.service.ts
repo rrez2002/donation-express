@@ -1,9 +1,10 @@
-import {DonationLink, DonationLinkModel, IDonationLink} from "../models/donation.link.model";
+import { CreateDTO, FindByIdDTO, FindByLinkDTO, FindDTO, UpdateDTO } from "../http/dtos/donation.link.dto";
+import {DonationLink, DonationLinkModel} from "../models/donation.link.model";
 
 export default new class DonationLinkService {
-    async Find(user_id: Pick<IDonationLink, "_id">) {
+    async Find(query: FindDTO) {
         try {
-            const donationLinks: DonationLink[] = await DonationLinkModel.find({user_id}, {
+            const donationLinks: DonationLink[] = await DonationLinkModel.find({query}, {
                 link: 1, amount: 1
             })
 
@@ -15,9 +16,9 @@ export default new class DonationLinkService {
         }
     }
 
-    async FindById(link_id: Pick<IDonationLink, "_id">) {
+    async FindById(query: FindByIdDTO) {
         try {
-            const donationLink = await DonationLinkModel.findOne({_id: link_id}, {
+            const donationLink = await DonationLinkModel.findOne({query}, {
                 link: 1, amount: 1
             })
 
@@ -29,7 +30,23 @@ export default new class DonationLinkService {
         }
     }
 
-    async Create(data: Omit<IDonationLink, "_id">) {
+    
+
+    async FindByLink(query: FindByLinkDTO) {
+        try {
+            const donationLink = await DonationLinkModel.findOne({query}, {
+                link: 1, amount: 1
+            })
+
+            return Promise.resolve(donationLink)
+        } catch (e) {
+            return Promise.reject({
+                message: (e as Error).message
+            });
+        }
+    }
+
+    async Create(data: CreateDTO) {
         try {
             await DonationLinkModel.create(data)
 
@@ -41,16 +58,14 @@ export default new class DonationLinkService {
         }
     }
 
-    async Update(link_id: Pick<IDonationLink, "_id">, data: Partial<IDonationLink>) {
+    async Update(query: FindByIdDTO, data: UpdateDTO) {
         try {
-            const donationLink = await this.FindById(link_id)
-
-            if (!donationLink) return Promise.reject({
-                message: "donation_link not found"
+            const donationLink = await DonationLinkModel.updateOne({query}, {
+                $set: data
             });
 
-            await DonationLinkModel.updateOne({_id: link_id}, {
-                $set: data
+            if (!donationLink.modifiedCount) return Promise.reject({
+                message: "donation_link not found"
             });
 
             return Promise.resolve()
@@ -61,9 +76,9 @@ export default new class DonationLinkService {
         }
     }
 
-    async Destroy(link_id: Pick<IDonationLink, "_id">) {
+    async Destroy(query: FindByIdDTO) {
         try {
-            const donationLink = await DonationLinkModel.deleteOne({_id: link_id})
+            const donationLink = await DonationLinkModel.deleteOne({query})
 
             if (donationLink.deletedCount) {
                 return Promise.resolve()
