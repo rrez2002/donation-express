@@ -22,7 +22,7 @@
  *                      example: username
  *                  phone:
  *                      type: string
- *                      example: 090100000000
+ *                      example: "090100000000"
  *                  password:
  *                      type: string
  *                      example: password

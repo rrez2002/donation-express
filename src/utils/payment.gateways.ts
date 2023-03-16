@@ -1,6 +1,6 @@
 type GatewayApiMethods = "GET"|"POST"
 
-interface IGatewayApi {
+export interface IGatewayApi {
     method:GatewayApiMethods,
     url:string,
 }

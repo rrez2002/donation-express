@@ -1,17 +1,23 @@
 import {PayIR} from "../../utils/payment.gateways";
 import axios from "axios";
+import { PaymentModel } from "../models/payment.model";
+import { GatewayDTO, PaymentDTO } from "../http/dtos/payment.dto";
 
 export default new class PaymentService{
-    async payIrGateway(amount:number , phone?: string, email?: string):Promise<any>  {
+    async payIrGateway(data:GatewayDTO):Promise<any>  {
         try {
             await axios.post(PayIR.sendData.url, JSON.stringify({
                 api: PayIR.merchantId,
-                amount: amount*10,
+                amount: data.amount*10,
                 redirect: PayIR.callbackUrl,
-                mobile: phone,
-                email: email,
+                description: data.description,
+                mobile: data.phone,
+                email: data.email,
+                validCardNumber: data.validCardNumber
             })).then(response => {
-                return Promise.resolve(response.data);
+                return Promise.resolve({
+                    token: response.data.token
+                });
             }).catch(err => {
                 return Promise.reject({
                     message:err.response.data.errorMessage
@@ -23,4 +29,17 @@ export default new class PaymentService{
             });
         }
     }
+
+
+    async SaveTransaction(data: PaymentDTO): Promise<any> {
+        try {
+            await PaymentModel.create(data)
+            return Promise.resolve();
+        }catch (e) {
+            return Promise.reject({
+                message:(e as Error).message
+            });
+        }
+    }
+
 }

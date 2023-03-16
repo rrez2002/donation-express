@@ -8,12 +8,26 @@
  *                  -   gateway
  *                  -   amount
  *              properties:
+ *                  name:
+ *                      type: string
+ *                  phone:
+ *                      type: string
+ *                      example: "0900000000"
  *                  gateway:
  *                      type: string
+ *                      enum:
+ *                          - payir
+ *                          - zarinpal
  *                      example: payir
  *                  amount:
  *                      type: number
  *                      example: 1000
+ *                  description:
+ *                      type: string
+ *                      example: description
+ *                  validCardNumber:
+ *                      type: string
+ *                      example: "****************"
  *
  */
 
