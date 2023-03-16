@@ -42,4 +42,64 @@ export default new class PaymentService<T extends PaymentGateway>{
         }
     }
 
+    async Verify(data: VerifyDTO, gateway: T):Promise<any>  {
+        try {
+            if (data.status == 0 || data.status == "NOK"){
+                await this.cancelTransaction(data.token)
+            }
+
+            await axios.post(gateway.Verify.url, JSON.stringify({
+                api: gateway.merchantId,
+                token: data.token
+            })).then(() => {
+                this.acceptTransaction(data.token)
+
+                return Promise.resolve();
+            }).catch(err => {
+                return Promise.reject({
+                    message:err.message
+                });
+            })
+
+        }catch (e) {
+            await this.cancelTransaction(data.token)
+
+            return Promise.reject({
+                message:(e as Error).message
+            });
+        }
+    }
+
+    private async acceptTransaction(authority: string):Promise<void>{
+        const trans = await PaymentModel.updateOne({
+            authority,
+            status: PaymentStatusEnum.Pending
+        },{
+            $set: {
+                status: PaymentStatusEnum.Success
+            }
+        });
+
+        if(trans.modifiedCount){
+            return Promise.resolve();
+        }
+        return Promise.reject({
+            message: "transaction is failed"
+        });
+    }
+
+    private async cancelTransaction(authority: string):Promise<void>{
+        const trans =  await PaymentModel.updateOne({authority},{
+            $set: {
+                status: PaymentStatusEnum.Failed
+            }
+        })
+
+        if(trans.modifiedCount){
+            return Promise.resolve();
+        }
+        return Promise.reject({
+            message: "transaction is failed"
+        });
+    }
 }

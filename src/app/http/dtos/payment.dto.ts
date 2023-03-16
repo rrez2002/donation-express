@@ -10,7 +10,15 @@ type GatewayDTO = {
     validCardNumber?: string
 }
 
+type VerifyDTO = {
+    token:string,
+    status:string|number
+}
+
+// type VerifyStatus = "OK"|"NOK"|1|0;
+
 export {
     PaymentDTO,
     GatewayDTO,
+    VerifyDTO,
 }

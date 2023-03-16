@@ -1,4 +1,4 @@
-import {checkSchema} from "express-validator"
+import {check, checkSchema, oneOf} from "express-validator"
 import {GatewayEnum} from "../../../utils/payment.gateways";
 // import {DonationLinkModel} from "../../models/donation.link.model";
 
@@ -41,3 +41,10 @@ export function Gateway() {
         },
     });
 }
+
+export function Verify() {
+    return oneOf([
+        check("gateway").isIn(Object.values(GatewayEnum))
+    ])
+}
+
