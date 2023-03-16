@@ -10,7 +10,7 @@ export enum GatewayEnum {
     "PAYIR" = "payir",
 }
 
-class PaymentGateway {
+export class PaymentGateway {
     constructor(
         private merchant_id: string,
         private send_data: IGatewayApi,
@@ -54,7 +54,7 @@ export const PayIR:PaymentGateway = new PaymentGateway(
       method:"POST",
       url:"https://pay.ir/pg/verify",
     },
-    `${url}:${port}/payment/verify`)
+    `${url}:${port}/payment/verify/${GatewayEnum.PAYIR}`)
 
 export const ZarinPal:PaymentGateway = new PaymentGateway(
     process.env.PAYIR_MERCHANT_ID|| "",
@@ -70,7 +70,7 @@ export const ZarinPal:PaymentGateway = new PaymentGateway(
         method:"POST",
         url:"https://api.zarinpal.com/pg/v4/payment/verify.json",
     },
-    `${url}:${port}/payment/verify`)
+    `${url}:${port}/payment/verify/${GatewayEnum.ZARINPAL}`)
 
 
 

@@ -1,15 +1,15 @@
-import {PayIR} from "../../utils/payment.gateways";
+import {PaymentGateway} from "../../utils/payment.gateways";
 import axios from "axios";
-import { PaymentModel } from "../models/payment.model";
-import { GatewayDTO, PaymentDTO } from "../http/dtos/payment.dto";
+import {PaymentModel, PaymentStatusEnum} from "../models/payment.model";
+import {GatewayDTO, PaymentDTO, VerifyDTO} from "../http/dtos/payment.dto";
 
-export default new class PaymentService{
-    async payIrGateway(data:GatewayDTO):Promise<any>  {
+export default new class PaymentService<T extends PaymentGateway>{
+    async Gateway(data:GatewayDTO, gateway: T):Promise<any> {
         try {
-            await axios.post(PayIR.sendData.url, JSON.stringify({
-                api: PayIR.merchantId,
+            await axios.post(gateway.sendData.url, JSON.stringify({
+                api: gateway.merchantId,
                 amount: data.amount*10,
-                redirect: PayIR.callbackUrl,
+                redirect: gateway.callbackUrl,
                 description: data.description,
                 mobile: data.phone,
                 email: data.email,
