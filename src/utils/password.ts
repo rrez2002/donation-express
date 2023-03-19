@@ -13,13 +13,13 @@ const VerifyPassword = async (user_name: string, password: string): Promise<bool
 
 }
 
-const GenerateJwtToken = async(data:object) => {
+const GenerateJwtToken = async(data:User) => {
     return sign({data}, process.env.PRIVET_KEY as string, {expiresIn: "3 days"})
 }
 
-const GenerateRefreshToken = async(data:User) => {
-    const refreshToken=  sign({data}, process.env.SECRET_KEY as string, {expiresIn: "5 days"});
-    await RedisClient.setEx(data.user_name, 3600 * 24 * 5, refreshToken);
+const GenerateRefreshToken = async(user_name:string) => {
+    const refreshToken=  sign({data:user_name}, process.env.SECRET_KEY as string, {expiresIn: "5 days"});
+    await RedisClient.setEx(user_name, 3600 * 24 * 5, refreshToken);
     return  refreshToken;
 }
 

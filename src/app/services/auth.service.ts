@@ -12,7 +12,7 @@ export default new class AuthService{
             const user = await UserModel.create(userData)
 
             const token = await GenerateJwtToken(user);
-            const refreshToken = await GenerateRefreshToken(user)
+            const refreshToken = await GenerateRefreshToken(user.user_name)
 
             return Promise.resolve({
                 token,
@@ -31,7 +31,7 @@ export default new class AuthService{
                 const user = await UserService.FindByUserName(userData)
                 
                 const token = await GenerateJwtToken(user);
-                const refreshToken = await GenerateRefreshToken(user)
+                const refreshToken = await GenerateRefreshToken(user.user_name)
 
                 return Promise.resolve({
                     token, refreshToken
@@ -61,12 +61,12 @@ export default new class AuthService{
                     message: "invalid token"
                 });
 
-                const refreshToken = await RedisClient.get(payload.data.user_name)
+                const refreshToken = await RedisClient.get(payload.data)
                 if (token == refreshToken) {
-                    const user = await UserService.FindById(payload.data._id)
+                    const user = await UserService.FindByUserName(payload.data)
                     if (user) {
                         const token = await GenerateJwtToken(user);
-                        const refreshToken = await GenerateRefreshToken(user)
+                        const refreshToken = await GenerateRefreshToken(user.user_name)
 
                         return tokens = {
                             token,
@@ -76,11 +76,11 @@ export default new class AuthService{
                 }
             })
 
-            if (!tokens.token || !tokens.refreshToken) return Promise.resolve(tokens);
-
-            return Promise.reject({
+            if (!tokens.token || !tokens.refreshToken) return Promise.reject({
                 message: "invalid token"
             });
+
+            return Promise.resolve(tokens);
 
         } catch (e) {
             return Promise.reject({
