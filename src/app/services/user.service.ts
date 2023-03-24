@@ -1,12 +1,11 @@
 import {User, UserModel} from "../models/user.model";
 import { FindByIdDTO, FindByUserNameDTO, UpdateDTO } from "../http/dtos/user.dto";
+import {ReadUserData} from "../helpers/read.data";
 
 export default new class UserService{
-    async FindById(query:FindByIdDTO):Promise<User> {
+    async FindById(query:FindByIdDTO, projection?: ReadUserData):Promise<User> {
         try {
-            const user = await UserModel.findById({query}, {
-                first_name: 1, last_name: 1, user_name: 1, phone: 1,
-            });
+            const user = await UserModel.findById({query}, projection);
 
             if (!user) return Promise.reject({
                 message: "user not found"
@@ -20,11 +19,9 @@ export default new class UserService{
         }
     }
 
-    async FindByUserName(query:FindByUserNameDTO):Promise<User>{
+    async FindByUserName(query:FindByUserNameDTO, projection?: ReadUserData):Promise<User>{
         try {
-            const user:User|null = await UserModel.findOne({query},  {
-                first_name: 1, last_name: 1, user_name: 1, phone: 1,
-            });
+            const user:User|null = await UserModel.findOne({query},  projection);
 
             if (!user) return Promise.reject({
                 message: "user not found"

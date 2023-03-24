@@ -32,7 +32,7 @@ export const gatewayResolver = {
 
             const linkModel = await donationLinkService.FindByLink({
                 link: args.link
-            })
+            },{link:1})
 
             if (!linkModel) return {
                 message: "donation_link not found"

@@ -1,12 +1,11 @@
 import { CreateDTO, FindByIdDTO, FindByLinkDTO, FindDTO, UpdateDTO } from "../http/dtos/donation.link.dto";
 import {DonationLink, DonationLinkModel} from "../models/donation.link.model";
+import {ReadDonationLinkData} from "../helpers/read.data";
 
 export default new class DonationLinkService {
-    async Find(query: FindDTO) {
+    async Find(query: FindDTO, projection?: ReadDonationLinkData) {
         try {
-            const donationLinks: DonationLink[] = await DonationLinkModel.find({query}, {
-                link: 1, amount: 1
-            })
+            const donationLinks: DonationLink[] = await DonationLinkModel.find({query}, projection)
 
             return Promise.resolve(donationLinks)
         } catch (e) {
@@ -16,11 +15,9 @@ export default new class DonationLinkService {
         }
     }
 
-    async FindById(query: FindByIdDTO) {
+    async FindById(query: FindByIdDTO, projection?: ReadDonationLinkData) {
         try {
-            const donationLink = await DonationLinkModel.findOne({query}, {
-                link: 1, amount: 1
-            })
+            const donationLink = await DonationLinkModel.findOne({query}, projection)
 
             return Promise.resolve(donationLink)
         } catch (e) {
@@ -32,11 +29,9 @@ export default new class DonationLinkService {
 
     
 
-    async FindByLink(query: FindByLinkDTO) {
+    async FindByLink(query: FindByLinkDTO, projection?: ReadDonationLinkData) {
         try {
-            const donationLink = await DonationLinkModel.findOne({query}, {
-                link: 1, amount: 1
-            })
+            const donationLink = await DonationLinkModel.findOne({query}, projection)
 
             return Promise.resolve(donationLink)
         } catch (e) {

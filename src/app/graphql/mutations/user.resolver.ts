@@ -23,6 +23,8 @@ const updateUserResolver = {
 
         return UserService.FindById({
             _id: context.request.user._id
+        },{
+            first_name: 1, last_name: 1, user_name: 1, phone: 1,
         });
     }
 }

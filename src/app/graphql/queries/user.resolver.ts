@@ -1,11 +1,6 @@
 import {userType} from "../typeDefs/user.type";
-import {Request, Response} from "express";
 import {AuthGraphQL} from "../middlewares/Auth";
-
-interface GraphQLContext {
-    request: Request,
-    response: Response
-}
+import {GraphQLContext} from "../index.graphql";
 
 export const userResolver = {
     type: userType,
