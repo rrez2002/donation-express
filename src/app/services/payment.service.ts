@@ -2,6 +2,8 @@ import {PaymentGateway} from "../../utils/payment.gateways";
 import axios from "axios";
 import {PaymentModel, PaymentStatusEnum} from "../models/payment.model";
 import {GatewayDTO, PaymentDTO, VerifyDTO} from "../http/dtos/payment.dto";
+import {WalletModel} from "../models/wallet.model";
+import {startSession} from "mongoose";
 
 export default new class PaymentService<T extends PaymentGateway>{
     async Gateway(data:GatewayDTO, gateway: T):Promise<any> {
@@ -29,7 +31,6 @@ export default new class PaymentService<T extends PaymentGateway>{
             });
         }
     }
-
 
     async SaveTransaction(data: PaymentDTO): Promise<any> {
         try {
@@ -71,20 +72,41 @@ export default new class PaymentService<T extends PaymentGateway>{
     }
 
     private async acceptTransaction(authority: string):Promise<void>{
-        const trans = await PaymentModel.updateOne({
+        const session = await startSession();
+
+        await PaymentModel.findOne({
             authority,
             status: PaymentStatusEnum.Pending
-        },{
-            $set: {
-                status: PaymentStatusEnum.Success
-            }
-        });
+        }).then(async (trans) => {
+            if (trans == null) return Promise.reject({
+                message: "transaction is failed"
+            });
 
-        if(trans.modifiedCount){
-            return Promise.resolve();
-        }
-        return Promise.reject({
-            message: "transaction is failed"
+            session.startTransaction();
+
+            WalletModel.updateOne({
+                user_id: trans.user_id
+            },{
+                $inc: {
+                    amount: trans.amount
+                },
+                $push: {
+                    transactions: {
+                        authority,
+                        amount: trans.amount
+                    }
+                }
+            }).then(() => {
+                trans.status = PaymentStatusEnum.Success
+                trans.save().then(() =>
+                    session.commitTransaction()
+                        .then(() => session.endSession())
+                );
+            }).then(() => {
+                return Promise.resolve();
+            })
+
+            return Promise.reject()
         });
     }
 

@@ -33,7 +33,7 @@ UserSchema.pre('save', function (next) {
     next();
 });
 
-UserSchema.method('fullName', function fullName() {
+UserSchema.method('fullName', function() {
     return `${this.first_name} ${this.last_name}`;
 });
 

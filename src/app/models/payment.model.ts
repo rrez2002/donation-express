@@ -1,4 +1,4 @@
-import {Model, model, Schema} from "mongoose";
+import {Model, model, Schema, Types} from "mongoose";
 
 export enum PaymentStatusEnum {
     Success = "success",
@@ -7,6 +7,7 @@ export enum PaymentStatusEnum {
 }
 
 export interface IPayment {
+    user_id: Types.ObjectId
     name?: string,
     phone?: string,
     authority: string,
@@ -26,6 +27,7 @@ export type Payment = IPayment & IPaymentMethod
 type PaymentModel = Model<IPayment, {}, IPaymentMethod>;
 
 const PaymentSchema = new Schema<IPayment, PaymentModel, IPaymentMethod>({
+    user_id: {type: Schema.Types.ObjectId, ref: "User", required: true},
     name: {type: Schema.Types.String},
     phone: {type: Schema.Types.String, ref: "User"},
     amount: {type: Schema.Types.Number, min: 1000, required: true},

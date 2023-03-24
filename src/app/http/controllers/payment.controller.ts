@@ -30,7 +30,9 @@ class PaymentController {
             }, await this.getGateway(gateway))
 
             await this.paymentService.SaveTransaction({
-                name: name, phone: phone, amount, authority: result.token, description,
+                name: name, phone: phone, amount,
+                authority: result.token, description,
+                user_id: linkModel.user_id
             })
 
             return new GatewayResponse(res, {

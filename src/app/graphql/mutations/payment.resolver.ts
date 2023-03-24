@@ -43,7 +43,8 @@ export const gatewayResolver = {
             }, await getGateway(gateway as GatewayEnum))
 
             await PaymentService.SaveTransaction({
-                name, phone, amount, authority: result.token, description,
+                name, phone, amount, authority: result.token,
+                description, user_id: linkModel.user_id
             })
 
             return {
