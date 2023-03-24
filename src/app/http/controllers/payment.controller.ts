@@ -2,18 +2,21 @@ import {Request, Response} from "express";
 import PaymentService from "../../services/payment.service";
 import {GatewayEnum, PayIR, PaymentGateway, ZarinPal} from "../../../utils/payment.gateways";
 import {ErrorResponse} from "../resources/error.response";
-import donationLinkService from "../../services/donation.link.service";
+import DonationLinkService from "../../services/donation.link.service";
 import {GatewayResponse} from "../resources/payment.response";
 import {JsonResponse} from "../resources/response";
 
 class PaymentController {
+    constructor(
+        private donationLinkService = DonationLinkService,
+        private paymentService = PaymentService,
+) {}
     async Gateway(req: Request, res: Response) {
         try {
             const donation_link = req.params.donation_link
-            const user = req.user;
             const {amount, gateway, description, name, phone} = req.body
 
-            const linkModel = await donationLinkService.FindByLink({
+            const linkModel = await this.donationLinkService.FindByLink({
                 link: donation_link
             })
 
@@ -22,12 +25,12 @@ class PaymentController {
             }, 404)
 
 
-            const result = await PaymentService.Gateway({
-                amount, phone: user.phone, description
+            const result = await this.paymentService.Gateway({
+                amount, phone: phone, description
             }, await this.getGateway(gateway))
 
-            await PaymentService.SaveTransaction({
-                name: user.fullName() ?? name, phone: user.phone ?? phone, amount, authority: result.token, description,
+            await this.paymentService.SaveTransaction({
+                name: name, phone: phone, amount, authority: result.token, description,
             })
 
             return new GatewayResponse(res, {
@@ -43,7 +46,7 @@ class PaymentController {
         const {gateway} = req.params;
         const {status, token, authority} = req.query
         try {
-            await PaymentService.Verify({token: token as string ?? authority as string, status: status as string}, await this.getGateway(gateway as GatewayEnum))
+            await this.paymentService.Verify({token: token as string ?? authority as string, status: status as string}, await this.getGateway(gateway as GatewayEnum))
 
             return new JsonResponse(res, {
                 message: "donation is success"

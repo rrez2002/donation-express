@@ -5,11 +5,12 @@ import {ErrorResponse} from "../resources/error.response";
 import {IUser} from "../../models/user.model";
 
 class AuthController {
+    constructor(private authService = AuthService) {}
     async Register(req: Request, res: Response) {
         try {
             const data: IUser = req.body;
 
-            const response = await AuthService.Register(data)
+            const response = await this.authService.Register(data)
 
             return new AuthResponse(res, response)
         }catch (e) {
@@ -21,7 +22,7 @@ class AuthController {
         try {
             const data = req.body;
 
-            const response = await AuthService.Login(data)
+            const response = await this.authService.Login(data)
 
             return new AuthResponse(res, response)
         }catch (e) {
@@ -33,7 +34,7 @@ class AuthController {
         try {
             const {token} = req.body;
 
-            const response = await AuthService.RefreshToken(token)
+            const response = await this.authService.RefreshToken(token)
 
             return new AuthResponse(res, response)
         }catch (e) {

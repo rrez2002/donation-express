@@ -7,10 +7,11 @@ import {DonationLinkCollection, DonationLinkResponse} from "../resources/donatio
 import {JsonResponse, messageResponse} from "../resources/response";
 
 class DonationLinkController {
+    constructor(private donationLinkService = DonationLinkService ) {}
     async Index(req: Request, res: Response) {
         try {
             const user_id = req.user._id
-            const donationLinks: DonationLink[] = await DonationLinkService.Find({user_id});
+            const donationLinks: DonationLink[] = await this.donationLinkService.Find({user_id});
 
             console.log(typeof donationLinks)
             return new DonationLinkCollection(res, donationLinks)
@@ -23,7 +24,7 @@ class DonationLinkController {
         try {
             const link_id: string = req.params.id;
 
-            const donationLink = await DonationLinkService.FindById(new Types.ObjectId(link_id));
+            const donationLink = await this.donationLinkService.FindById(new Types.ObjectId(link_id));
 
             if (!donationLink) return new ErrorResponse(res, {
                     message: "donation_link not found"
@@ -41,7 +42,7 @@ class DonationLinkController {
 
             const userId = req.user._id
 
-            await DonationLinkService.Create({
+            await this.donationLinkService.Create({
                 user_id: new Types.ObjectId(userId),
                 link,
                 amount,
@@ -60,7 +61,7 @@ class DonationLinkController {
             const link_id = req.params.id
             const body = req.body
 
-            await DonationLinkService.Update(new Types.ObjectId(link_id) ,body)
+            await this.donationLinkService.Update(new Types.ObjectId(link_id) ,body)
 
             return new JsonResponse(res,{
                 message: "update donation_link success"
@@ -74,7 +75,7 @@ class DonationLinkController {
         try {
             const link_id = req.params.id
 
-            await DonationLinkService.Destroy(new Types.ObjectId(link_id))
+            await this.donationLinkService.Destroy(new Types.ObjectId(link_id))
 
             return new JsonResponse(res, {
                 message: "delete donation_link success"
