@@ -6,19 +6,16 @@ import {JsonResponse, messageResponse} from "../resources/response";
 
 class UserController{
     async Me(req: Request, res: Response): Promise<UserResponse>  {
-        const user = req.user
+        const user = await UserService.FindById(req.user._id)
 
         return new UserResponse(res , user)
     }
 
     async Update(req: Request, res: Response):Promise<JsonResponse<messageResponse>> {
         try {
-            const id = req.user?._id
+            const id = req.user._id
             const body = req.body;
 
-            if (!id) return new ErrorResponse(res , {
-                message: "user not found"
-            })
 
             await UserService.Update(id, body)
 
@@ -32,11 +29,7 @@ class UserController{
 
     async Destroy(req: Request, res: Response):Promise<JsonResponse<messageResponse>> {
         try {
-            const id = req.user?._id
-
-            if (!id) return new ErrorResponse(res, {
-                    message: "user not found"
-                });
+            const id = req.user._id
 
             await UserService.Destroy(id)
 
