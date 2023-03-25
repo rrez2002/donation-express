@@ -1,13 +1,14 @@
-import {PaymentGateway} from "../../utils/payment.gateways";
+import {GatewayEnum, PayIR, PaymentGateway, ZarinPal} from "../../utils/payment.gateways";
 import axios from "axios";
 import {PaymentModel, PaymentStatusEnum} from "../models/payment.model";
 import {GatewayDTO, PaymentDTO, VerifyDTO} from "../http/dtos/payment.dto";
 import {WalletModel} from "../models/wallet.model";
 import {startSession} from "mongoose";
 
-export default new class PaymentService<T extends PaymentGateway>{
-    async Gateway(data:GatewayDTO, gateway: T):Promise<any> {
+export default new class PaymentService<T extends GatewayEnum>{
+    async Gateway(data:GatewayDTO, gatewayEnum: T):Promise<any> {
         try {
+            const gateway = await this.getGateway(gatewayEnum)
             await axios.post(gateway.sendData.url, JSON.stringify({
                 api: gateway.merchantId,
                 amount: data.amount*10,
@@ -43,12 +44,13 @@ export default new class PaymentService<T extends PaymentGateway>{
         }
     }
 
-    async Verify(data: VerifyDTO, gateway: T):Promise<any>  {
+    async Verify(data: VerifyDTO, gatewayEnum: T):Promise<any>  {
         try {
             if (data.status == 0 || data.status == "NOK"){
-                await this.cancelTransaction(data.token)
+                return await this.cancelTransaction(data.token)
             }
 
+            const gateway = await this.getGateway(gatewayEnum)
             await axios.post(gateway.Verify.url, JSON.stringify({
                 api: gateway.merchantId,
                 token: data.token
@@ -123,5 +125,14 @@ export default new class PaymentService<T extends PaymentGateway>{
         return Promise.reject({
             message: "transaction is failed"
         });
+    }
+
+    private getGateway = async (gateway: GatewayEnum): Promise<PaymentGateway> => {
+        switch (gateway) {
+            case GatewayEnum.PAYIR:
+                return PayIR;
+            case GatewayEnum.ZARINPAL:
+                return ZarinPal;
+        }
     }
 }

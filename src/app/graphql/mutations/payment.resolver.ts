@@ -2,17 +2,8 @@ import {GraphQLInt, GraphQLString} from "graphql/type";
 import {messageType} from "../typeDefs/message.type";
 import PaymentService from "../../services/payment.service";
 import {GatewayDTO} from "../../http/dtos/payment.dto";
-import {GatewayEnum, PayIR, PaymentGateway, ZarinPal} from "../../../utils/payment.gateways";
+import {GatewayEnum} from "../../../utils/payment.gateways";
 import donationLinkService from "../../services/donation.link.service";
-
-const getGateway = async (gateway: GatewayEnum): Promise<PaymentGateway> => {
-    switch (gateway) {
-    case GatewayEnum.PAYIR:
-        return PayIR;
-    case GatewayEnum.ZARINPAL:
-        return ZarinPal;
-    }
-}
 
 export const gatewayResolver = {
     type: messageType,
@@ -39,8 +30,8 @@ export const gatewayResolver = {
             }
 
             const result = await PaymentService.Gateway({
-                amount, phone: phone, description
-            }, await getGateway(gateway as GatewayEnum))
+                amount, phone, description
+            }, gateway as GatewayEnum)
 
             await PaymentService.SaveTransaction({
                 name, phone, amount, authority: result.token,

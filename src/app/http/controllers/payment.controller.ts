@@ -1,6 +1,6 @@
 import {Request, Response} from "express";
 import PaymentService from "../../services/payment.service";
-import {GatewayEnum, PayIR, PaymentGateway, ZarinPal} from "../../../utils/payment.gateways";
+import {GatewayEnum} from "../../../utils/payment.gateways";
 import {ErrorResponse} from "../resources/error.response";
 import DonationLinkService from "../../services/donation.link.service";
 import {GatewayResponse} from "../resources/payment.response";
@@ -26,8 +26,8 @@ class PaymentController {
 
 
             const result = await this.paymentService.Gateway({
-                amount, phone: phone, description
-            }, await this.getGateway(gateway))
+                amount, phone, description
+            }, gateway)
 
             await this.paymentService.SaveTransaction({
                 name: name, phone: phone, amount,
@@ -46,24 +46,18 @@ class PaymentController {
 
     async Verify(req: Request, res: Response) {
         const {gateway} = req.params;
-        const {status, token, authority} = req.query
+        let {status, token, authority} = req.query
+        token = token ?? authority;
         try {
-            await this.paymentService.Verify({token: token as string ?? authority as string, status: status as string}, await this.getGateway(gateway as GatewayEnum))
+            await this.paymentService.Verify({
+                token: token as string, status: status as string
+            }, gateway as GatewayEnum)
 
             return new JsonResponse(res, {
                 message: "donation is success"
             });
         }catch (e) {
             return new ErrorResponse(res, e as Error)
-        }
-    }
-
-    private async getGateway(gateway: GatewayEnum): Promise<PaymentGateway> {
-        switch (gateway) {
-            case GatewayEnum.PAYIR:
-                return PayIR;
-            case GatewayEnum.ZARINPAL:
-                return ZarinPal;
         }
     }
 }
