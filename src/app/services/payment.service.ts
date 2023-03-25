@@ -2,7 +2,7 @@ import {GatewayEnum, PayIR, PaymentGateway, ZarinPal} from "../../utils/payment.
 import axios from "axios";
 import {PaymentModel, PaymentStatusEnum} from "../models/payment.model";
 import {GatewayDTO, PaymentDTO, VerifyDTO} from "../http/dtos/payment.dto";
-import {WalletModel} from "../models/wallet.model";
+import {walletModel} from "../models/wallet.model";
 import {startSession} from "mongoose";
 
 export default new class PaymentService<T extends GatewayEnum>{
@@ -86,7 +86,7 @@ export default new class PaymentService<T extends GatewayEnum>{
 
             session.startTransaction();
 
-            WalletModel.updateOne({
+            walletModel.updateOne({
                 user_id: trans.user_id
             },{
                 $inc: {
