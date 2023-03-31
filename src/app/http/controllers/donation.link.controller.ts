@@ -5,13 +5,18 @@ import DonationLinkService from "../../services/donation.link.service";
 import {Types} from "mongoose";
 import {DonationLinkCollection, DonationLinkResponse} from "../resources/donation.link.response";
 import {JsonResponse, messageResponse} from "../resources/response";
+import {ReadDonationLinkData} from "../../helpers/read.data";
+
+const projection: ReadDonationLinkData = {
+    _id:1, link:1, amount:1,
+}
 
 class DonationLinkController {
     constructor(private readonly donationLinkService = DonationLinkService ) {}
     Index = async (req: Request, res: Response) => {
         try {
             const user_id = req.user._id
-            const donationLinks: DonationLink[] = await this.donationLinkService.Find({user_id});
+            const donationLinks: DonationLink[] = await this.donationLinkService.Find({user_id},projection);
 
             console.log(typeof donationLinks)
             return new DonationLinkCollection(res, donationLinks)
@@ -24,7 +29,7 @@ class DonationLinkController {
         try {
             const link_id: string = req.params.id;
 
-            const donationLink = await this.donationLinkService.FindById(new Types.ObjectId(link_id));
+            const donationLink = await this.donationLinkService.FindById(new Types.ObjectId(link_id), projection);
 
             if (!donationLink) return new ErrorResponse(res, {
                     message: "donation_link not found"
