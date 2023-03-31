@@ -5,16 +5,14 @@ import {ErrorResponse} from "../resources/error.response";
 import {JsonResponse, messageResponse} from "../resources/response";
 
 class UserController{
-    constructor(
-        private userService = UserService,
-    ) {}
-    async Me(req: Request, res: Response): Promise<UserResponse>  {
+    constructor(private readonly userService = UserService,) {}
+    Me = async (req: Request, res: Response): Promise<UserResponse> => {
         const user = await this.userService.FindById(req.user._id)
 
         return new UserResponse(res , user)
     }
 
-    async Update(req: Request, res: Response):Promise<JsonResponse<messageResponse>> {
+    Update = async (req: Request, res: Response): Promise<JsonResponse<messageResponse>> => {
         try {
             const id = req.user._id
             const body = req.body;
@@ -30,7 +28,7 @@ class UserController{
         }
     }
 
-    async Destroy(req: Request, res: Response):Promise<JsonResponse<messageResponse>> {
+    Destroy = async (req: Request, res: Response): Promise<JsonResponse<messageResponse>> => {
         try {
             const id = req.user._id
 

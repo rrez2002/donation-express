@@ -5,44 +5,45 @@ import {ErrorResponse} from "../resources/error.response";
 import {IUser} from "../../models/user.model";
 
 class AuthController {
-    constructor(private authService = AuthService) {}
-    async Register(req: Request, res: Response) {
+    constructor(private readonly authService = AuthService) {}
+
+    Register = async (req: Request, res: Response) => {
         try {
             const data: IUser = req.body;
 
             const response = await this.authService.Register(data)
 
             return new AuthResponse(res, response)
-        }catch (e) {
+        } catch (e) {
             return new ErrorResponse(res, e as Error)
         }
     }
 
-    async Login(req: Request, res: Response) {
+    Login = async (req: Request, res: Response) => {
         try {
             const data = req.body;
 
             const response = await this.authService.Login(data)
 
             return new AuthResponse(res, response)
-        }catch (e) {
+        } catch (e) {
             return new ErrorResponse(res, e as Error)
         }
     }
 
-    async RefreshToken(req: Request, res: Response) {
+    RefreshToken = async (req: Request, res: Response) => {
         try {
             const {token} = req.body;
 
             const response = await this.authService.RefreshToken(token)
 
             return new AuthResponse(res, response)
-        }catch (e) {
+        } catch (e) {
             return new ErrorResponse(res, e as Error)
         }
     }
 
-    async Logout(req: Request, res: Response) {
+    Logout = async (req: Request, res: Response) => {
         return res.status(200).json({})
     }
 }

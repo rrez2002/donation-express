@@ -7,8 +7,8 @@ import {DonationLinkCollection, DonationLinkResponse} from "../resources/donatio
 import {JsonResponse, messageResponse} from "../resources/response";
 
 class DonationLinkController {
-    constructor(private donationLinkService = DonationLinkService ) {}
-    async Index(req: Request, res: Response) {
+    constructor(private readonly donationLinkService = DonationLinkService ) {}
+    Index = async (req: Request, res: Response) => {
         try {
             const user_id = req.user._id
             const donationLinks: DonationLink[] = await this.donationLinkService.Find({user_id});
@@ -20,7 +20,7 @@ class DonationLinkController {
         }
     }
 
-    async Find(req: Request, res: Response): Promise<DonationLinkResponse|ErrorResponse> {
+    Find = async (req: Request, res: Response): Promise<DonationLinkResponse|ErrorResponse> => {
         try {
             const link_id: string = req.params.id;
 
@@ -36,7 +36,7 @@ class DonationLinkController {
         }
     }
 
-    async Store(req: Request, res: Response): Promise<JsonResponse<messageResponse>> {
+    Store = async (req: Request, res: Response): Promise<JsonResponse<messageResponse>> => {
         try {
             const {link, amount} = req.body
 
@@ -56,7 +56,7 @@ class DonationLinkController {
         }
     }
 
-    async Update(req: Request, res: Response): Promise<JsonResponse<messageResponse>> {
+    Update = async (req: Request, res: Response): Promise<JsonResponse<messageResponse>> => {
         try {
             const link_id = req.params.id
             const body = req.body
@@ -71,7 +71,7 @@ class DonationLinkController {
         }
     }
 
-    async Destroy(req: Request, res: Response): Promise<JsonResponse<messageResponse>> {
+    Destroy = async (req: Request, res: Response): Promise<JsonResponse<messageResponse>> => {
         try {
             const link_id = req.params.id
 

@@ -8,10 +8,10 @@ import {JsonResponse} from "../resources/response";
 
 class PaymentController {
     constructor(
-        private donationLinkService = DonationLinkService,
-        private paymentService = PaymentService,
-) {}
-    async Gateway(req: Request, res: Response) {
+        private readonly donationLinkService=  DonationLinkService,
+        private readonly paymentService = PaymentService,
+        ) {}
+    Gateway = async (req: Request, res: Response) => {
         try {
             const donation_link = req.params.donation_link
             const {amount, gateway, description, name, phone} = req.body
@@ -44,7 +44,7 @@ class PaymentController {
         }
     }
 
-    async Verify(req: Request, res: Response) {
+    Verify = async (req: Request, res: Response) => {
         const {gateway} = req.params;
         let {status, token, authority} = req.query
         token = token ?? authority;
@@ -62,4 +62,4 @@ class PaymentController {
     }
 }
 
-export default new PaymentController()
+export default new PaymentController
